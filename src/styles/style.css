@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    padding: 0;
+    margin: 0;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  main {
+    font-family: "Poppins", sans-serif;
+    color: #000;
+  }
+
+/* =================================================== */
+/* =================================================== */
+/* .detail_dashboard-container {
+  margin: 50px 300px;
+}
+
+.detail_dashboard-container h3 {
+  font-size: 32px;
+  margin: 20px 0;
+  color: #28317e;
+}
+
+.detail_dashboard-container p {
+  text-align: justify;
+}
+
+.detail_dashboard-container-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0 50px ;
+} */
+
+/* =================================================== */
+/* =================================================== */
+/* .detail_misi-container {
+  margin-left: 350px;
+  margin-right: 100px;
+} */
+
+/* .detail_misi-container h3 {
+  font-size: 32px;
+  margin: 20px 0;
+  color: #28317e;
+} */
+
+/* .detail_misi-container p {
+  text-align: justify;
+} */
+
+/* .detail_misi-container-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0 50px ;
+} */
+
+/* =================================================== */
+/* =================================================== */
+/* .detail_operator-container {
+  margin: 50px 300px;
+}
+
+.detail_operator-container h3 {
+  font-size: 32px;
+  margin: 20px 0;
+  color: #28317e;
+}
+
+.detail_operator-container p {
+  text-align: justify;
+}
+
+.detail_operator-container-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0 50px ;
+} */
+
+/* =================================================== */
+/* =================================================== */
+/* .detail_uav-container {
+  margin: 50px 300px;
+}
+
+.detail_uav-container h3 {
+  font-size: 32px;
+  margin: 20px 0;
+  color: #28317e;
+}
+
+.detail_uav-container p {
+  text-align: justify;
+}
+
+.detail_uav-container-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0 50px ;
+} */
+
+/* =================================================== */
+/* =================================================== */
+/* .detail_maintenance-container {
+  margin: 50px 0px;
+  margin-left: 300px;
+  margin-right: 30px;
+  
+}
+
+.detail_maintenance-container h3 {
+  font-size: 32px;
+  margin: 20px 0;
+  color: #28317e;
+}
+
+.detail_maintenance-container p {
+  text-align: justify;
+}
+
+.detail_maintenance-container-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0 50px ;
+} */
+
+/* .dokumentasi-container {
+  display: flex;
+  width: 100%;
+  padding: 60px 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dokumentasi-container-before {
+  width: 50%;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px 30px;
+}
+
+.dokumentasi-container-after {
+  width: 50%;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px 30px;
+} */
+
+/* =================================================== */
+/* =================================================== */
+/* .detail_komponen-container {
+  margin: 50px 300px;
+}
+
+.detail_komponen-container h3 {
+  font-size: 32px;
+  margin: 20px 0;
+  color: #28317e;
+}
+
+.detail_komponen-container p {
+  text-align: justify;
+}
+
+.detail_komponen-container-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0 50px ;
+} */
+
+/* =================================================== */
+/* =================================================== */

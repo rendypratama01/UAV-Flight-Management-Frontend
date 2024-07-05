@@ -1,0 +1,14 @@
+export const rootPath = "/";
+export const loginPath = "/login";
+export const profilePath = "/profile";
+export const dashboardPath = "/dashboard";
+export const misiPath = "/misi";
+export const operatorPath = "/operator";
+export const wahanaPath = "/wahana";
+export const maintenancePath = "/perbaikan";
+export const komponenPath = "/komponen";
+export const detailMisiPath = "/detail-misi";
+export const detailOperatorPath = "/detail-operator";
+export const detailWahanaPath = "/detail-wahana";
+export const detailMaintenancePath = "/detail-perbaikan";
+export const detailKomponenPath = "/detail-komponen";
