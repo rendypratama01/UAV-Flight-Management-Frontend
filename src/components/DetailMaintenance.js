@@ -9,6 +9,7 @@ const DetailMaintenance = () => {
     teknisi: "Jane Smith",
     kategori: "Electrical",
     tanggalPerbaikan: "2024-06-25",
+    tempatPerbaikan:"Unila",
     biaya: "Rp 500000",
   };
 
@@ -45,6 +46,11 @@ const DetailMaintenance = () => {
                 <span className="font-bold w-40">Tanggal Perbaikan</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">{maintenanceDetails.tanggalPerbaikan}</span>
+              </div>
+              <div className="flex mb-2">
+                <span className="font-bold w-40">Tempat Perbaikan</span>
+                <span className="w-1 mx-1">:</span>
+                <span className="flex-1 text-left">{maintenanceDetails.tempatPerbaikan}</span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-40">Biaya</span>
