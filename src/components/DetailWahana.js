@@ -78,7 +78,7 @@ const DetailWahana = () => {
             </div>
           </Tab>
           <Tab eventKey="spesifikasi" title="Spesifikasi">
-          <div className="mt-3">
+            <div className="mt-3">
               <div className="flex mb-2">
                 <span className="font-bold w-36">Wingspan</span>
                 <span className="w-1 mx-1">:</span>
@@ -148,6 +148,34 @@ const DetailWahana = () => {
                   <p className="text-gray-600">{mission.tanggal}</p>
                 </div>
               ))}
+            </div>
+          </Tab>
+          <Tab eventKey="foto" title="Foto">
+            <div className="mt-3 grid grid-cols-2 gap-4">
+            <div className="flex flex-col items-center">
+                <h5 className="text-lg font-semibold mb-2">Depan</h5>
+                <img src={image} alt="Depan" className="w-64 h-64 object-cover"/>
+              </div>
+              <div className="flex flex-col items-center">
+                <h5 className="text-lg font-semibold mb-2">Belakang</h5>
+                <img src={image} alt="Belakang" className="w-64 h-64 object-cover"/>
+              </div>
+              <div className="flex flex-col items-center">
+                <h5 className="text-lg font-semibold mb-2">Kanan</h5>
+                <img src={image} alt="Kanan" className="w-64 h-64 object-cover"/>
+              </div>
+              <div className="flex flex-col items-center">
+                <h5 className="text-lg font-semibold mb-2">Kiri</h5>
+                <img src={image} alt="Kiri" className="w-64 h-64 object-cover"/>
+              </div>
+              <div className="flex flex-col items-center">
+                <h5 className="text-lg font-semibold mb-2">Atas</h5>
+                <img src={image} alt="Atas" className="w-64 h-64 object-cover"/>
+              </div>
+              <div className="flex flex-col items-center">
+                <h5 className="text-lg font-semibold mb-2">Bawah</h5>
+                <img src={image} alt="Bawah" className="w-64 h-64 object-cover"/>
+              </div>
             </div>
           </Tab>
         </Tabs>
