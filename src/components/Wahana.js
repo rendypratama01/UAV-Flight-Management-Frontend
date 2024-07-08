@@ -1,154 +1,3 @@
-// import React from 'react'
-// import DataTable from "react-data-table-component";
-// import { FaEdit } from "react-icons/fa";
-// import { MdDelete } from "react-icons/md";
-// import { TbListDetails } from "react-icons/tb";
-// import { FaPlus } from "react-icons/fa";
-// import Button from 'react-bootstrap/Button';
-// import { detailWahanaPath } from '../routes';
-
-// function Wahana() {
-//   const customStyles = {
-//     headCells: {
-//       style: {
-//         backgroundColor: "#EAEAEA", // Change to your desired color
-//       },
-//     },
-//   };
-
-//     const columns = [
-//         {
-//           name: "Nama",
-//           selector: (row) => row.nama,
-//           sortable: true,
-//         },
-//         {
-//           name: "Deskripsi",
-//           selector: (row) => row.deskripsi,
-//           sortable: true,
-//         },
-//         {
-//           name: "Jam Terbang",
-//           selector: (row) => row.jam_terbang,
-//           sortable: true,
-//         },
-//         {
-//             name: "Status",
-//             cell: row => (
-//               row.status ? "Aktif" : "Mati"
-//             ),
-//             sortable: true,
-//           },
-//         {
-//           name: "",
-//           cell: (row) =>(
-//             <div className="flex gap-3">
-//             <button className="text-gray-700"> <a href={detailWahanaPath} className="no-underline hover:no-underline text-inherit"><TbListDetails className="text-2xl"/></a></button>
-//             <button className="text-blue-900"><FaEdit className="text-2xl"/></button>
-//             <button className="text-red-600"><MdDelete className="text-2xl"/></button>
-//             </div>
-//           ),
-//         },
-//       ];
-
-//       const data = [
-// {
-//     "id": 1,
-//     "nama": "Phantom 4 Pro",
-//     "deskripsi": "Lorem ipsum dolor sit amet",
-//     "jam_terbang": "120 jam",
-//     "status": true
-//   },
-//   {
-//     "id": 2,
-//     "nama": "Mavic Air 2",
-//     "deskripsi": "Consectetur adipiscing elit",
-//     "jam_terbang": "80 jam",
-//     "status": true
-//   },
-//   {
-//     "id": 3,
-//     "nama": "Spark",
-//     "deskripsi": "Sed do eiusmod tempor incididunt",
-//     "jam_terbang": "50 jam",
-//     "status": false
-//   },
-//   {
-//     "id": 4,
-//     "nama": "Inspire 2",
-//     "deskripsi": "Ut labore et dolore magna aliqua",
-//     "jam_terbang": "200 jam",
-//     "status": true
-//   },
-//   {
-//     "id": 5,
-//     "nama": "Phantom 3 Standard",
-//     "deskripsi": "Ut enim ad minim veniam",
-//     "jam_terbang": "150 jam",
-//     "status": true
-//   },
-//   {
-//     "id": 6,
-//     "nama": "Mavic Mini",
-//     "deskripsi": "Quis nostrud exercitation ullamco",
-//     "jam_terbang": "30 jam",
-//     "status": false
-//   },
-//   {
-//     "id": 7,
-//     "nama": "Phantom 4 Advanced",
-//     "deskripsi": "Laboris nisi ut aliquip ex ea commodo consequat",
-//     "jam_terbang": "180 jam",
-//     "status": true
-//   },
-//   {
-//     "id": 8,
-//     "nama": "Mavic 2 Pro",
-//     "deskripsi": "Duis aute irure dolor in reprehenderit",
-//     "jam_terbang": "100 jam",
-//     "status": true
-//   },
-//   {
-//     "id": 9,
-//     "nama": "Phantom 4",
-//     "deskripsi": "Excepteur sint occaecat cupidatat non proident",
-//     "jam_terbang": "160 jam",
-//     "status": false
-//   },
-//   {
-//     "id": 10,
-//     "nama": "Mavic Air",
-//     "deskripsi": "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-//     "jam_terbang": "90 jam",
-//     "status": true
-//   }
-
-//       ];
-
-//       const handleChange = ({ selectedRows }) => {
-//         console.log("Selected Rows: ", selectedRows);
-//       };
-//   return (
-//     <div className="ml-cl7">
-//       <h3 className="pt-10 text-3xl text-new-300">Wahana</h3>
-//       <DataTable
-//         title="Data Wahana"
-//         columns={columns}
-//         data={data}
-//         fixedHeader
-//         fixedHeaderScrollHeight="530px"
-//         pagination
-//         highlightOnHover
-//         onSelectedRowsChange={handleChange}
-//         actions={<Button style={{ backgroundColor: '#5A6ACF', color: '#ffffff' }} className="d-flex align-items-center"> Tambah <FaPlus className="text-sm"/> </Button> }
-//         customStyles={customStyles}
-//       />
-//     </div>
-//   )
-// }
-
-// export default Wahana
-
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import { FaEdit, FaPlus } from "react-icons/fa";
@@ -168,7 +17,12 @@ function Wahana() {
     deskripsi: "",
     jam_terbang: "",
     status: true,
-    foto: null,
+    fotoDepan: null,
+    fotoBelakang: null,
+    fotoKanan: null,
+    fotoKiri: null,
+    fotoAtas: null,
+    fotoBawah: null,
     type: "",
     wingspan: "",
     length: "",
@@ -195,10 +49,10 @@ function Wahana() {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const { name, files } = e.target;
     setFormData({
       ...formData,
-      foto: file,
+      [name]: files[0],
     });
   };
 
@@ -364,79 +218,71 @@ function Wahana() {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-          <Tabs defaultActiveKey="informasi" id="mission-tabs">
-          <Tab eventKey="informasi" title="Informasi">
-            <Form.Group controlId="formNama">
-              <Form.Label>Nama</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan nama"
-                name="nama"
-                value={formData.nama}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+            <Tabs defaultActiveKey="informasi" id="wahana-tabs">
+              <Tab eventKey="informasi" title="Informasi">
+                <Form.Group controlId="formNama">
+                  <Form.Label>Nama</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Masukkan nama"
+                    name="nama"
+                    value={formData.nama}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            <Form.Group controlId="formDeskripsi" className="mt-3">
-              <Form.Label>Deskripsi</Form.Label>
-              <Form.Control
-                as="textarea"
-                placeholder="Masukkan deskripsi"
-                name="deskripsi"
-                value={formData.deskripsi}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formDeskripsi" className="mt-3">
+                  <Form.Label>Deskripsi</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    placeholder="Masukkan deskripsi"
+                    name="deskripsi"
+                    value={formData.deskripsi}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            <Form.Group controlId="formJamTerbang" className="mt-3">
-              <Form.Label>Jam Terbang</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan jam terbang"
-                name="jam_terbang"
-                value={formData.jam_terbang}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formJamTerbang" className="mt-3">
+                  <Form.Label>Jam Terbang</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Masukkan jam terbang"
+                    name="jam_terbang"
+                    value={formData.jam_terbang}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            <Form.Group controlId="formStatus" className="mt-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Control
-                as="select"
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-              >
-                <option value={true}>Aktif</option>
-                <option value={false}>Mati</option>
-              </Form.Control>
-            </Form.Group>
+                <Form.Group controlId="formStatus" className="mt-3">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                  >
+                    <option value={true}>Aktif</option>
+                    <option value={false}>Mati</option>
+                  </Form.Control>
+                </Form.Group>
 
-            <Form.Group controlId="formFoto" className="mt-3">
-              <Form.Label>Upload Foto</Form.Label>
-              <Form.Control
-                type="file"
-                name="foto"
-                onChange={handleFileChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formType" className="mt-3">
+                  <Form.Label>Tipe</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Pilih tipe...</option>
+                    <option value="type1">Fixed Wing Drone</option>
+                    <option value="type2">Multirotor Drone</option>
+                    <option value="type3">Vtol Drone</option>
+                  </Form.Control>
+                </Form.Group>
+              </Tab>
 
-            <Form.Group controlId="formType" className="mt-3">
-              <Form.Label>Tipe</Form.Label>
-              <Form.Control
-                as="select"
-                name="type"
-                value={formData.type}
-                onChange={handleInputChange}
-              >
-                <option value="">Pilih tipe...</option>
-                <option value="type1">Type 1</option>
-                <option value="type2">Type 2</option>
-              </Form.Control>
-            </Form.Group>
-            </Tab>
-
-            <Tab eventKey="spesifikasi" title="Spesifikasi">
+              <Tab eventKey="spesifikasi" title="Spesifikasi">
             <Form.Group controlId="formWingspan" className="mt-3">
               <Form.Label>Wingspan (mm)</Form.Label>
               <Form.Control
@@ -559,7 +405,135 @@ function Wahana() {
             </Form.Group>
 
             </Tab>
+
+              <Tab eventKey="foto" title="Foto">
+                <Form.Group controlId="formFotoDepan" className="mt-3">
+                  <Form.Label>Upload Foto Depan</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="fotoDepan"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formFotoBelakang" className="mt-3">
+                  <Form.Label>Upload Foto Belakang</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="fotoBelakang"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formFotoKanan" className="mt-3">
+                  <Form.Label>Upload Foto Kanan</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="fotoKanan"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formFotoKiri" className="mt-3">
+                  <Form.Label>Upload Foto Kiri</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="fotoKiri"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formFotoAtas" className="mt-3">
+                  <Form.Label>Upload Foto Atas</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="fotoAtas"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formFotoBawah" className="mt-3">
+                  <Form.Label>Upload Foto Bawah</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="fotoBawah"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+              </Tab>
             </Tabs>
+            {/* Display uploaded images */}
+            {formData.fotoDepan && (
+              <div className="mt-4">
+                <h5>Foto Depan:</h5>
+                <img
+                  src={URL.createObjectURL(formData.fotoDepan)}
+                  alt="Foto Depan"
+                  className="img-fluid"
+                  style={{ maxWidth: "200px", margin: "10px" }}
+                />
+              </div>
+            )}
+
+            {formData.fotoBelakang && (
+              <div className="mt-4">
+                <h5>Foto Belakang:</h5>
+                <img
+                  src={URL.createObjectURL(formData.fotoBelakang)}
+                  alt="Foto Belakang"
+                  className="img-fluid"
+                  style={{ maxWidth: "200px", margin: "10px" }}
+                />
+              </div>
+            )}
+
+            {formData.fotoKanan && (
+              <div className="mt-4">
+                <h5>Foto Kanan:</h5>
+                <img
+                  src={URL.createObjectURL(formData.fotoKanan)}
+                  alt="Foto Kanan"
+                  className="img-fluid"
+                  style={{ maxWidth: "200px", margin: "10px" }}
+                />
+              </div>
+            )}
+
+            {formData.fotoKiri && (
+              <div className="mt-4">
+                <h5>Foto Kiri:</h5>
+                <img
+                  src={URL.createObjectURL(formData.fotoKiri)}
+                  alt="Foto Kiri"
+                  className="img-fluid"
+                  style={{ maxWidth: "200px", margin: "10px" }}
+                />
+              </div>
+            )}
+
+            {formData.fotoAtas && (
+              <div className="mt-4">
+                <h5>Foto Atas:</h5>
+                <img
+                  src={URL.createObjectURL(formData.fotoAtas)}
+                  alt="Foto Atas"
+                  className="img-fluid"
+                  style={{ maxWidth: "200px", margin: "10px" }}
+                />
+              </div>
+            )}
+
+            {formData.fotoBawah && (
+              <div className="mt-4">
+                <h5>Foto Bawah:</h5>
+                <img
+                  src={URL.createObjectURL(formData.fotoBawah)}
+                  alt="Foto Bawah"
+                  className="img-fluid"
+                  style={{ maxWidth: "200px", margin: "10px" }}
+                />
+              </div>
+            )}
 
             <Button variant="primary" type="submit" className="mt-4">
               Submit
