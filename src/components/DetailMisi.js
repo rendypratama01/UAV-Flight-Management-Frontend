@@ -20,9 +20,19 @@ const DetailMisi = () => {
     "After Landing": [false, false, false],
   });
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [buttonStatus, setButtonStatus] = useState("Mulai"); // Status tombol
   const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false); // State untuk modal tambah
   const [statusMisi, setStatusMisi] = useState("Selesai");
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [formData, setFormData] = useState({
+    waktuMulai: "",
+    waktuSelesai: "",
+    flightPlan: null,
+    noticeToAirman: null,
+    izinLokasiTerbang: null,
+  });
 
   const handleToggle = (index) => {
     setOpenAccordion(openAccordion === index ? null : index);
@@ -65,6 +75,7 @@ const DetailMisi = () => {
     durasi: "1 Jam",
     statusMisi: "Selesai",
     waktuMulai: "12.00 WIB, 1 Juni 2024",
+    waktuSelesai: "12.00 WIB, 2 Juni 2024",
     berkas: [
       {
         id: 1,
@@ -80,6 +91,11 @@ const DetailMisi = () => {
         id: 3,
         nama: "Flight Plan",
         url: "https://example.com/flight-plan.pdf",
+      },
+      {
+        id: 4,
+        nama: "Flight Security Clearance",
+        url: "https://example.com/flight-security-clearance.pdf",
       },
     ],
   };
@@ -119,7 +135,10 @@ const DetailMisi = () => {
         <Col sm={3}>
           {uploadedFiles.includes(file.id) ? (
             <>
-              <button className="text-red-600" onClick={() => handleDelete(file.id)}>
+              <button
+                className="text-red-600"
+                onClick={() => handleDelete(file.id)}
+              >
                 <MdDelete className="text-2xl" />
               </button>
               <button className="text-blue-700">
@@ -127,7 +146,10 @@ const DetailMisi = () => {
               </button>
             </>
           ) : (
-            <button className="text-green-600" onClick={() => handleUpload(file.id)}>
+            <button
+              className="text-green-600"
+              onClick={() => handleUpload(file.id)}
+            >
               <MdUpload className="text-2xl" />
             </button>
           )}
@@ -152,7 +174,9 @@ const DetailMisi = () => {
       <div key={key} className="mb-3">
         <div
           className={`cursor-pointer p-4 ${
-            allChecked(key) ? "bg-[#57D643] text-white" : "bg-gray-200 text-black"
+            allChecked(key)
+              ? "bg-[#57D643] text-white"
+              : "bg-gray-200 text-black"
           } rounded-md`}
           onClick={() => handleToggle(index)}
         >
@@ -191,22 +215,35 @@ const DetailMisi = () => {
     ));
   };
 
-  const handleButtonClick = () => {
-    if (buttonStatus === "Selesai") {
-      setShowModal(true);
-    } else {
-      setButtonStatus("Selesai");
-    }
-  };
-
   const handleModalClose = () => setShowModal(false);
 
   const handleStatusChange = (event) => setStatusMisi(event.target.value);
 
   const handleModalSave = () => {
-    setButtonStatus(statusMisi);
     setShowModal(false);
   };
+
+  const handleAddModalClose = () => setShowAddModal(false);
+
+  const handleAddModalSave = () => {
+    // Handle form data submission here
+    console.log(formData);
+    setShowAddModal(false);
+  };
+
+  const handlePhotoUpload = (event) => {
+    const files = Array.from(event.target.files);
+    const newPhotos = files.map((file) => URL.createObjectURL(file));
+    setUploadedPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
+  };
+
+  const handlePhotoClick = (photo) => {
+    setSelectedPhoto(photo);
+    setShowPhotoModal(true);
+  };
+
+  const handlePhotoModalOpen = () => setShowPhotoModal(true);
+  const handlePhotoModalClose = () => setShowPhotoModal(false);
 
   return (
     <div className="absolute ml-cl7 mr-cr1 mt-ct1">
@@ -272,6 +309,14 @@ const DetailMisi = () => {
           </Tab>
 
           <Tab eventKey="detail-penerbangan" title="Detail Penerbangan">
+            <div className="mt-3 px-2 flex justify-between">
+              <button
+                className="py-2 px-4 bg-blue-500 text-white rounded-md"
+                onClick={() => setShowAddModal(true)}
+              >
+                Tambah
+              </button>
+            </div>
             <div className="mt-3 px-2 py-3">
               <h4>Informasi</h4>
               <div className="flex mb-2">
@@ -289,10 +334,17 @@ const DetailMisi = () => {
                 </span>
               </div>
               <div className="flex mb-2">
-                <span className="font-bold w-36">Waktu Misi</span>
+                <span className="font-bold w-36">Waktu Mulai</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
                   {penerbanganDetails.waktuMulai}
+                </span>
+              </div>
+              <div className="flex mb-2">
+                <span className="font-bold w-36">Waktu Selesai</span>
+                <span className="w-1 mx-1">:</span>
+                <span className="flex-1 text-left">
+                  {penerbanganDetails.waktuSelesai}
                 </span>
               </div>
             </div>
@@ -321,19 +373,47 @@ const DetailMisi = () => {
 
             <div className="px-2 py-3 flex justify-start">
               <button
-                className={`py-2 px-4 rounded-md ${
-                  buttonStatus === "Mulai" ? "bg-blue-500 text-white" : "bg-green-500 text-white"
-                }`}
-                onClick={handleButtonClick}
+                className={`py-2 px-4 rounded-md bg-green-500 text-white`}
+                onClick={() => setShowModal(true)}
               >
-                {buttonStatus}
+                Selesai
               </button>
+            </div>
+          </Tab>
+          <Tab eventKey="dokumentasi" title="Dokumentasi">
+            <div className="mt-3 px-2 flex justify-between">
+              <button
+                className="py-2 px-4 bg-blue-500 text-white rounded-md"
+                onClick={handlePhotoModalOpen}
+              >
+                Tambah Foto
+              </button>
+            </div>
+            <div className="mt-3 px-2 py-3">
+              <h4>Foto Dokumentasi</h4>
+              <div className="d-flex flex-wrap">
+                {uploadedPhotos.map((photo, index) => (
+                  <img
+                    key={index}
+                    src={photo}
+                    alt={`uploaded-${index}`}
+                    className="img-thumbnail mr-2 mb-2"
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handlePhotoClick(photo)}
+                  />
+                ))}
+              </div>
             </div>
           </Tab>
         </Tabs>
       </div>
 
-      {/* Modal Popup */}
+      {/* Modal Popup untuk status misi */}
       <Modal show={showModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Ubah Status Misi</Modal.Title>
@@ -379,9 +459,113 @@ const DetailMisi = () => {
           </button>
         </Modal.Footer>
       </Modal>
+
+      {/* Modal Popup untuk menambah detail penerbangan */}
+      <Modal show={showAddModal} onHide={handleAddModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Detail Penerbangan</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <div className="mb-3">
+              <label htmlFor="waktuMulai" className="form-label">
+                Waktu Mulai
+              </label>
+              <input
+                type="datetime-local"
+                className="form-control"
+                id="waktuMulai"
+                value={formData.waktuMulai}
+                onChange={(e) =>
+                  setFormData({ ...formData, waktuMulai: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="waktuSelesai" className="form-label">
+                Waktu Selesai
+              </label>
+              <input
+                type="datetime-local"
+                className="form-control"
+                id="waktuSelesai"
+                value={formData.waktuSelesai}
+                onChange={(e) =>
+                  setFormData({ ...formData, waktuSelesai: e.target.value })
+                }
+              />
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={handleAddModalClose}>
+            Tutup
+          </button>
+          <button className="btn btn-primary" onClick={handleAddModalSave}>
+            Simpan
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showPhotoModal} onHide={handlePhotoModalClose} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {selectedPhoto ? "Lihat Foto" : "Upload Foto Dokumentasi"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPhoto ? (
+            <img
+              src={selectedPhoto}
+              alt="Selected"
+              className="img-fluid"
+              style={{ width: "100%" }}
+            />
+          ) : (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoUpload}
+                className="form-control"
+              />
+              <div className="mt-3">
+                <h5>Foto yang Diupload</h5>
+                <div className="d-flex flex-wrap">
+                  {uploadedPhotos.map((photo, index) => (
+                    <img
+                      key={index}
+                      src={photo}
+                      alt={`uploaded-preview-${index}`}
+                      className="img-thumbnail mr-2 mb-2"
+                      style={{
+                        width: "150px",
+                        height: "150px",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handlePhotoClick(photo)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={handlePhotoModalClose}>
+            Tutup
+          </button>
+          {!selectedPhoto && (
+            <button className="btn btn-primary" onClick={handlePhotoModalClose}>
+              Simpan
+            </button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
 export default DetailMisi;
-
