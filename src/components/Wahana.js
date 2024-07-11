@@ -30,12 +30,13 @@ function Wahana() {
     propulsi: "",
     baterai: "",
     payload: "",
-    telemetry: "",
     durasi: "",
     cakupan: "",
     ketinggian: "",
     kapasitas: "",
+    rotor: "",
   });
+  const [selectedType, setSelectedType] = useState("");
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
@@ -54,6 +55,15 @@ function Wahana() {
       ...formData,
       [name]: files[0],
     });
+  };
+
+  const handleTypeChange = (e) => {
+    const newType = e.target.value;
+    setFormData({
+      ...formData,
+      type: newType,
+    });
+    setSelectedType(newType);
   };
 
   const handleSubmit = (e) => {
@@ -272,139 +282,194 @@ function Wahana() {
                     as="select"
                     name="type"
                     value={formData.type}
-                    onChange={handleInputChange}
+                    onChange={handleTypeChange}
                   >
                     <option value="">Pilih tipe...</option>
-                    <option value="type1">Fixed Wing Drone</option>
-                    <option value="type2">Multirotor Drone</option>
-                    <option value="type3">Vtol Drone</option>
+                    <option value="fixed">Fixed Wing</option>
+                    <option value="multirotor">Multirotor</option>
+                    <option value="vtol">Vtol Plane</option>
                   </Form.Control>
                 </Form.Group>
               </Tab>
 
               <Tab eventKey="spesifikasi" title="Spesifikasi">
-            <Form.Group controlId="formWingspan" className="mt-3">
-              <Form.Label>Wingspan (mm)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan wingspan"
-                name="wingspan"
-                value={formData.wingspan}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                {selectedType === "fixed" && (
+                  <>
+                    <Form.Group controlId="formWingspan" className="mt-3">
+                      <Form.Label>Wingspan (mm)</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Masukkan wingspan"
+                        name="wingspan"
+                        value={formData.wingspan}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
 
-            <Form.Group controlId="formLength" className="mt-3">
-              <Form.Label>Length (mm)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan length"
-                name="length"
-                value={formData.length}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                    <Form.Group controlId="formLength" className="mt-3">
+                      <Form.Label>Length (mm)</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Masukkan length"
+                        name="length"
+                        value={formData.length}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </>
+                )}
 
-            <Form.Group controlId="formMaterial" className="mt-3">
-              <Form.Label>Material</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan material"
-                name="material"
-                value={formData.material}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                {selectedType === "multirotor" && (
+                  <>
+                    <Form.Group controlId="formRotor" className="mt-3">
+                      <Form.Label>Rotor</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan jumlah rotor"
+                        name="rotor"
+                        value={formData.rotor}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
 
-            <Form.Group controlId="formPropulsi" className="mt-3">
-              <Form.Label>Propulsi</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan propulsi"
-                name="propulsi"
-                value={formData.propulsi}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                    <Form.Group controlId="formLength" className="mt-3">
+                      <Form.Label>Length (mm)</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Masukkan length"
+                        name="length"
+                        value={formData.length}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </>
+                )}
 
-            <Form.Group controlId="formBaterai" className="mt-3">
-              <Form.Label>Baterai</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan baterai"
-                name="baterai"
-                value={formData.baterai}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                {selectedType === "vtol" && (
+                  <>
+                    <Form.Group controlId="formWingspan" className="mt-3">
+                      <Form.Label>Wingspan (mm)</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Masukkan wingspan"
+                        name="wingspan"
+                        value={formData.wingspan}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
 
-            <Form.Group controlId="formPayload" className="mt-3">
-              <Form.Label>Payload</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan payload"
-                name="payload"
-                value={formData.payload}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                    <Form.Group controlId="formRotor" className="mt-3">
+                      <Form.Label>Rotor</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan jumlah rotor"
+                        name="rotor"
+                        value={formData.rotor}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
 
-            <Form.Group controlId="formTelemetry" className="mt-3">
-              <Form.Label>Telemetry</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan telemetry"
-                name="telemetry"
-                value={formData.telemetry}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                    <Form.Group controlId="formLength" className="mt-3">
+                      <Form.Label>Length (mm)</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Masukkan length"
+                        name="length"
+                        value={formData.length}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </>
+                )}
 
-            <Form.Group controlId="formDurasi" className="mt-3">
-              <Form.Label>Durasi (menit)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan durasi"
-                name="durasi"
-                value={formData.durasi}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formMaterial" className="mt-3">
+                  <Form.Label>Material</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Masukkan material"
+                    name="material"
+                    value={formData.material}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            <Form.Group controlId="formCakupan" className="mt-3">
-              <Form.Label>Cakupan (ha)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan cakupan"
-                name="cakupan"
-                value={formData.cakupan}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formPropulsi" className="mt-3">
+                  <Form.Label>Propulsi</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Masukkan propulsi"
+                    name="propulsi"
+                    value={formData.propulsi}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            <Form.Group controlId="formKetinggian" className="mt-3">
-              <Form.Label>Ketinggian (m)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan ketinggian"
-                name="ketinggian"
-                value={formData.ketinggian}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formBaterai" className="mt-3">
+                  <Form.Label>Baterai</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Masukkan baterai"
+                    name="baterai"
+                    value={formData.baterai}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            <Form.Group controlId="formKapasitas" className="mt-3">
-              <Form.Label>Kapasitas (gr)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan kapasitas"
-                name="kapasitas"
-                value={formData.kapasitas}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+                <Form.Group controlId="formPayload" className="mt-3">
+                  <Form.Label>Payload</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Masukkan payload"
+                    name="payload"
+                    value={formData.payload}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
 
-            </Tab>
+                <Form.Group controlId="formDurasi" className="mt-3">
+                  <Form.Label>Durasi (menit)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    placeholder="Masukkan durasi"
+                    name="durasi"
+                    value={formData.durasi}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formCakupan" className="mt-3">
+                  <Form.Label>Cakupan (ha)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    placeholder="Masukkan cakupan"
+                    name="cakupan"
+                    value={formData.cakupan}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formKetinggian" className="mt-3">
+                  <Form.Label>Ketinggian (m)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    placeholder="Masukkan ketinggian"
+                    name="ketinggian"
+                    value={formData.ketinggian}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formKapasitas" className="mt-3">
+                  <Form.Label>Kapasitas (gr)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    placeholder="Masukkan kapasitas"
+                    name="kapasitas"
+                    value={formData.kapasitas}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+              </Tab>
 
               <Tab eventKey="foto" title="Foto">
                 <Form.Group controlId="formFotoDepan" className="mt-3">
@@ -416,6 +481,19 @@ function Wahana() {
                   />
                 </Form.Group>
 
+                <div className="mt-3">
+                  {formData.fotoDepan && (
+                    <div className="mt-4">
+                      <img
+                        src={URL.createObjectURL(formData.fotoDepan)}
+                        alt="Foto Depan"
+                        className="img-fluid"
+                        style={{ maxWidth: "200px", margin: "10px" }}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <Form.Group controlId="formFotoBelakang" className="mt-3">
                   <Form.Label>Upload Foto Belakang</Form.Label>
                   <Form.Control
@@ -424,6 +502,19 @@ function Wahana() {
                     onChange={handleFileChange}
                   />
                 </Form.Group>
+
+                <div className="mt-4">
+                  {formData.fotoBelakang && (
+                    <div className="mt-4">
+                      <img
+                        src={URL.createObjectURL(formData.fotoBelakang)}
+                        alt="Foto Belakang"
+                        className="img-fluid"
+                        style={{ maxWidth: "200px", margin: "10px" }}
+                      />
+                    </div>
+                  )}
+                </div>
 
                 <Form.Group controlId="formFotoKanan" className="mt-3">
                   <Form.Label>Upload Foto Kanan</Form.Label>
@@ -434,6 +525,19 @@ function Wahana() {
                   />
                 </Form.Group>
 
+                <div className="mt-4">
+                  {formData.fotoKanan && (
+                    <div className="mt-4">
+                      <img
+                        src={URL.createObjectURL(formData.fotoKanan)}
+                        alt="Foto Kanan"
+                        className="img-fluid"
+                        style={{ maxWidth: "200px", margin: "10px" }}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <Form.Group controlId="formFotoKiri" className="mt-3">
                   <Form.Label>Upload Foto Kiri</Form.Label>
                   <Form.Control
@@ -442,6 +546,19 @@ function Wahana() {
                     onChange={handleFileChange}
                   />
                 </Form.Group>
+
+                <div className="mt-4">
+                  {formData.fotoKiri && (
+                    <div className="mt-4">
+                      <img
+                        src={URL.createObjectURL(formData.fotoKiri)}
+                        alt="Foto Kiri"
+                        className="img-fluid"
+                        style={{ maxWidth: "200px", margin: "10px" }}
+                      />
+                    </div>
+                  )}
+                </div>
 
                 <Form.Group controlId="formFotoAtas" className="mt-3">
                   <Form.Label>Upload Foto Atas</Form.Label>
@@ -452,6 +569,19 @@ function Wahana() {
                   />
                 </Form.Group>
 
+                <div className="mt-4">
+                  {formData.fotoAtas && (
+                    <div className="mt-4">
+                      <img
+                        src={URL.createObjectURL(formData.fotoAtas)}
+                        alt="Foto Atas"
+                        className="img-fluid"
+                        style={{ maxWidth: "200px", margin: "10px" }}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <Form.Group controlId="formFotoBawah" className="mt-3">
                   <Form.Label>Upload Foto Bawah</Form.Label>
                   <Form.Control
@@ -460,80 +590,21 @@ function Wahana() {
                     onChange={handleFileChange}
                   />
                 </Form.Group>
+
+                <div className="mt-4">
+                  {formData.fotoBawah && (
+                    <div className="mt-4">
+                      <img
+                        src={URL.createObjectURL(formData.fotoBawah)}
+                        alt="Foto Bawah"
+                        className="img-fluid"
+                        style={{ maxWidth: "200px", margin: "10px" }}
+                      />
+                    </div>
+                  )}
+                </div>
               </Tab>
             </Tabs>
-            {/* Display uploaded images */}
-            {formData.fotoDepan && (
-              <div className="mt-4">
-                <h5>Foto Depan:</h5>
-                <img
-                  src={URL.createObjectURL(formData.fotoDepan)}
-                  alt="Foto Depan"
-                  className="img-fluid"
-                  style={{ maxWidth: "200px", margin: "10px" }}
-                />
-              </div>
-            )}
-
-            {formData.fotoBelakang && (
-              <div className="mt-4">
-                <h5>Foto Belakang:</h5>
-                <img
-                  src={URL.createObjectURL(formData.fotoBelakang)}
-                  alt="Foto Belakang"
-                  className="img-fluid"
-                  style={{ maxWidth: "200px", margin: "10px" }}
-                />
-              </div>
-            )}
-
-            {formData.fotoKanan && (
-              <div className="mt-4">
-                <h5>Foto Kanan:</h5>
-                <img
-                  src={URL.createObjectURL(formData.fotoKanan)}
-                  alt="Foto Kanan"
-                  className="img-fluid"
-                  style={{ maxWidth: "200px", margin: "10px" }}
-                />
-              </div>
-            )}
-
-            {formData.fotoKiri && (
-              <div className="mt-4">
-                <h5>Foto Kiri:</h5>
-                <img
-                  src={URL.createObjectURL(formData.fotoKiri)}
-                  alt="Foto Kiri"
-                  className="img-fluid"
-                  style={{ maxWidth: "200px", margin: "10px" }}
-                />
-              </div>
-            )}
-
-            {formData.fotoAtas && (
-              <div className="mt-4">
-                <h5>Foto Atas:</h5>
-                <img
-                  src={URL.createObjectURL(formData.fotoAtas)}
-                  alt="Foto Atas"
-                  className="img-fluid"
-                  style={{ maxWidth: "200px", margin: "10px" }}
-                />
-              </div>
-            )}
-
-            {formData.fotoBawah && (
-              <div className="mt-4">
-                <h5>Foto Bawah:</h5>
-                <img
-                  src={URL.createObjectURL(formData.fotoBawah)}
-                  alt="Foto Bawah"
-                  className="img-fluid"
-                  style={{ maxWidth: "200px", margin: "10px" }}
-                />
-              </div>
-            )}
 
             <Button variant="primary" type="submit" className="mt-4">
               Submit

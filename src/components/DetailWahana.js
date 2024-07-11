@@ -8,12 +8,13 @@ const DetailWahana = () => {
   const wahanaDetails = {
     nama: 'Wahana Alpha',
     status: 'Aktif',
-    jamTerbang: '1200 jam',
-    tipe: 'Type1'
+    operasional: '1200 jam',
+    tipe: 'Fixed Wing'
   };
 
   const wahanaSpecs = {
     wingspan: "3000 mm",
+    rotor : "4",
     length: "1500 mm",
     material: "Fiber",
     propulsi: "Modified brushless electric motor",
@@ -34,6 +35,15 @@ const DetailWahana = () => {
     { id: 4, judul: 'Pengiriman Logistik Merapi', kategori: 'Pengiriman', tanggal: '19 Oktober 2023' },
     { id: 5, judul: 'Pemetaan Rinjani', kategori: 'Pemetaan', tanggal: '14 November 2023' },
     { id: 6, judul: 'Monitoring Gunung Agung', kategori: 'Monitoring', tanggal: '15 Desember 2023' }
+  ];
+
+  const perbaikan = [
+    { id: 1, judul: 'Perbaikan Struktur Rangka UAV', kategori: 'Airframe', tanggal: '10 Januari 2023' },
+    { id: 2, judul: 'Upgrade Sistem Navigasi UAV', kategori: 'Elektronik', tanggal: '15 Februari 2023' },
+    { id: 3, judul: 'Penggantian Baterai UAV', kategori: 'Elektronik', tanggal: '20 Maret 2023' },
+    { id: 4, judul: 'Optimisasi Sistem Kamera UAV', kategori: 'Elektronik', tanggal: '12 Mei 2023' },
+    { id: 5, judul: 'Perbaikan Sayap UAV', kategori: 'Airframe', tanggal: '25 Juni 2023' },
+    { id: 6, judul: 'Perbaikan Motor UAV', kategori: 'Elektronik', tanggal: '18 Agustus 2023' }
   ];
 
   return (
@@ -66,9 +76,9 @@ const DetailWahana = () => {
                 <span className="flex-1 text-left">{wahanaDetails.status}</span>
               </div>
               <div className="flex mb-2">
-                <span className="font-bold w-36">Jam Terbang</span>
+                <span className="font-bold w-36">Operasional</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{wahanaDetails.jamTerbang}</span>
+                <span className="flex-1 text-left">{wahanaDetails.operasional}</span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Tipe</span>
@@ -146,6 +156,20 @@ const DetailWahana = () => {
                   <h4 className="text-lg font-semibold text-gray-800">{mission.judul}</h4>
                   <p className="text-gray-600">{mission.kategori}</p>
                   <p className="text-gray-600">{mission.tanggal}</p>
+                </div>
+              ))}
+            </div>
+          </Tab>
+          <Tab eventKey="perbaikan" title="Perbaikan">
+          <div className="mt-3 grid grid-cols-1 gap-6">
+              {perbaikan.map(perbaikan => (
+                <div
+                  key={perbaikan.id}
+                  className="bg-white border border-gray-300 rounded-lg p-4 hover:bg-gray-100 cursor-pointer"
+                >
+                  <h4 className="text-lg font-semibold text-gray-800">{perbaikan.judul}</h4>
+                  <p className="text-gray-600">{perbaikan.kategori}</p>
+                  <p className="text-gray-600">{perbaikan.tanggal}</p>
                 </div>
               ))}
             </div>
