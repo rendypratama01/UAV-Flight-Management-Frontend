@@ -93,8 +93,8 @@ function Wahana() {
       sortable: true,
     },
     {
-      name: "Jam Terbang",
-      selector: (row) => row.jam_terbang,
+      name: "Operasional",
+      selector: (row) => row.operasional,
       sortable: true,
     },
     {
