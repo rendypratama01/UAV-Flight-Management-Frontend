@@ -209,6 +209,10 @@ function Komponen() {
     nama: '',
     deskripsi: '',
     idkomponen: '',
+    harga: '',
+    toko: '',
+    operasional: '',
+    tanggalBeli: '',
     foto: null
   });
 
@@ -451,6 +455,50 @@ function Komponen() {
                 placeholder="Enter ID Komponen"
                 name="idkomponen"
                 value={formData.idkomponen}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formHarga" className="mt-3">
+              <Form.Label>Harga (Rp)</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter Harga Komponen"
+                name="harga"
+                value={formData.harga}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formToko" className="mt-3">
+              <Form.Label>Toko</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Toko Komponen"
+                name="toko"
+                value={formData.toko}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formOperasional" className="mt-3">
+              <Form.Label>Operasional (Rp)</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter Operasional Komponen"
+                name="operasional"
+                value={formData.operasional}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formTanggalBeli" className="mt-3">
+              <Form.Label>Tanggal Beli</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Enter Tanggal Beli Komponen"
+                name="tanggalBeli"
+                value={formData.tanggalBeli}
                 onChange={handleInputChange}
               />
             </Form.Group>
