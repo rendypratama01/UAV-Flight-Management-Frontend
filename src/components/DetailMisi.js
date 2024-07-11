@@ -71,11 +71,11 @@ const DetailMisi = () => {
     videoSender: "2.4 Ghz",
   };
 
-  const penerbanganDetails = {
-    durasi: "1 Jam",
-    statusMisi: "Selesai",
-    waktuMulai: "12.00 WIB, 1 Juni 2024",
-    waktuSelesai: "12.00 WIB, 2 Juni 2024",
+  const [penerbanganDetails, setPenerbanganDetails] = useState({
+    durasi: "",
+    statusMisi: "",
+    waktuMulai: "",
+    waktuSelesai: "",
     berkas: [
       {
         id: 1,
@@ -98,6 +98,23 @@ const DetailMisi = () => {
         url: "https://example.com/flight-security-clearance.pdf",
       },
     ],
+  });
+
+  const formatDateTime = (datetime) => {
+    const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+    const date = new Date(datetime);
+    return date.toLocaleDateString('id-ID', options).replace(',', ' WIB');
+  };
+
+  const calculateDuration = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const durationMs = endDate - startDate;
+    
+    const durationHrs = Math.floor(durationMs / (1000 * 60 * 60));
+    const durationMins = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${durationHrs} Jam ${durationMins} Menit`;
   };
 
   const weatherData = [
@@ -220,14 +237,28 @@ const DetailMisi = () => {
   const handleStatusChange = (event) => setStatusMisi(event.target.value);
 
   const handleModalSave = () => {
+    setPenerbanganDetails((prevDetails) => ({
+      ...prevDetails,
+      statusMisi: statusMisi,  // Update status misi
+    }));
     setShowModal(false);
   };
 
   const handleAddModalClose = () => setShowAddModal(false);
 
   const handleAddModalSave = () => {
-    // Handle form data submission here
-    console.log(formData);
+    const formattedStartTime = formatDateTime(formData.waktuMulai);
+    const formattedEndTime = formatDateTime(formData.waktuSelesai);
+  
+    const duration = calculateDuration(formData.waktuMulai, formData.waktuSelesai);
+  
+    setPenerbanganDetails({
+      ...penerbanganDetails,
+      waktuMulai: formattedStartTime,
+      waktuSelesai: formattedEndTime,
+      durasi: duration,
+    });
+  
     setShowAddModal(false);
   };
 
