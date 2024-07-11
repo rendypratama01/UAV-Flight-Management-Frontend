@@ -1,153 +1,3 @@
-// import React from 'react'
-// import DataTable from "react-data-table-component";
-// import { FaEdit } from "react-icons/fa";
-// import { MdDelete } from "react-icons/md";
-// import { TbListDetails } from "react-icons/tb";
-// import { FaPlus } from "react-icons/fa";
-// import Button from 'react-bootstrap/Button';
-// import { detailOperatorPath } from '../routes';
-
-// function Operator() {
-//   const customStyles = {
-//     headCells: {
-//       style: {
-//         backgroundColor: "#EAEAEA", // Change to your desired color
-//       },
-//     },
-//   };
-
-//     const columns = [
-//         {
-//           name: "Nama",
-//           selector: (row) => row.nama,
-//           sortable: true,
-//         },
-//         {
-//           name: "Email",
-//           selector: (row) => row.email,
-//           sortable: true,
-//         },
-//         {
-//           name: "Role",
-//           selector: (row) => row.role,
-//           sortable: true,
-//         },
-//         {
-//           name: "No. Telp",
-//           selector: (row) => row.telpon,
-//           sortable: true,
-//         },
-//         {
-//           name: "",
-//           cell: (row) =>(
-//             <div className="flex gap-3">
-//             <button className="text-gray-700"> <a href={detailOperatorPath} className="no-underline hover:no-underline text-inherit"><TbListDetails className="text-2xl"/></a></button>
-//             <button className="text-blue-900"><FaEdit className="text-2xl"/></button>
-//             <button className="text-red-600"><MdDelete className="text-2xl"/></button>
-//             </div>
-//           ),
-//         },
-//       ];
-    
-//       const data = [
-        // {
-        //     "id": 1,
-        //     "nama": "Jade",
-        //     "email": "Jade@gmail.com",
-        //     "role": "Admin",
-        //     "telpon": "081221247589"
-        //   },
-        //   {
-        //     "id": 2,
-        //     "nama": "Febri",
-        //     "email": "feb@gmail.com",
-        //     "role": "Pilot",
-        //     "telpon": "081365129099"
-        //   },
-        //   {
-        //     "id": 3,
-        //     "nama": "Max",
-        //     "email": "max@gmail.com",
-        //     "role": "Teknisi",
-        //     "telpon": "089642537656"
-        //   },
-        //   {
-        //     "id": 4,
-        //     "nama": "Julian",
-        //     "email": "julian@gmail.com",
-        //     "role": "Pilot",
-        //     "telpon": "081262816103"
-        //   },
-        //   {
-        //     "id": 5,
-        //     "nama": "Agus",
-        //     "email": "agus@gmail.com",
-        //     "role": "Admin",
-        //     "telpon": "089612413286"
-        //   },
-        //   {
-        //     "id": 6,
-        //     "nama": "Septa",
-        //     "email": "septa@gmail.com",
-        //     "role": "Teknisi",
-        //     "telpon": "08136682456"
-        //   },
-        //   {
-        //     "id": 7,
-        //     "nama": "Rina",
-        //     "email": "rina@gmail.com",
-        //     "role": "Admin",
-        //     "telpon": "081234567890"
-        //   },
-        //   {
-        //     "id": 8,
-        //     "nama": "Budi",
-        //     "email": "budi@gmail.com",
-        //     "role": "Pilot",
-        //     "telpon": "081298765432"
-        //   },
-        //   {
-        //     "id": 9,
-        //     "nama": "Sinta",
-        //     "email": "sinta@gmail.com",
-        //     "role": "Teknisi",
-        //     "telpon": "089678543210"
-        //   },
-        //   {
-        //     "id": 10,
-        //     "nama": "Wawan",
-        //     "email": "wawan@gmail.com",
-        //     "role": "Admin",
-        //     "telpon": "081312345678"
-        //   }
-    
-//       ];
-    
-//       const handleChange = ({ selectedRows }) => {
-//         console.log("Selected Rows: ", selectedRows);
-//       };
-
-//   return (
-//     <div className="ml-cl7">
-//       <h3 className="pt-10 text-3xl text-new-300">Operator</h3>
-//       <DataTable
-//         title="Data Operator"
-//         columns={columns}
-//         data={data}
-//         fixedHeader 
-//         fixedHeaderScrollHeight="530px"
-//         pagination
-//         highlightOnHover
-//         onSelectedRowsChange={handleChange}
-//         actions={<Button style={{ backgroundColor: '#5A6ACF', color: '#ffffff' }} className="d-flex align-items-center"> Tambah <FaPlus className="text-sm"/> </Button> }
-//         customStyles={customStyles}
-//       />
-//     </div>
-//   )
-// }
-
-// export default Operator
-
 import React, { useState } from 'react';
 import DataTable from "react-data-table-component";
 import { FaEdit, FaPlus } from "react-icons/fa";
@@ -164,9 +14,9 @@ function Operator() {
     nama: '',
     email: '',
     role: '',
+    nik: '',
     tanggalLahir: '',
     telpon: '',
-    jamTerbang: '',
     foto: null
   });
 
@@ -370,11 +220,23 @@ function Operator() {
                 onChange={handleInputChange}
               >
                 <option value="">Pilih role...</option>
-                <option value="admin">Admin</option>
+                <option value="admin">Mission Manager</option>
                 <option value="pilot">Pilot</option>
+                <option value="pilot">GCS Operator</option>
                 <option value="teknisi">Teknisi</option>
                 <option value="tamu">Tamu</option>
               </Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId="formNIK" className="mt-3">
+              <Form.Label>NIK</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Masukkan NIK"
+                name="nik"
+                value={formData.nik}
+                onChange={handleInputChange}
+              />
             </Form.Group>
 
             <Form.Group controlId="formTanggalLahir" className="mt-3">
@@ -394,17 +256,6 @@ function Operator() {
                 placeholder="Masukkan no. telpon"
                 name="telpon"
                 value={formData.telpon}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formJamTerbang" className="mt-3">
-              <Form.Label>Jam Terbang</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Masukkan jam terbang"
-                name="jamTerbang"
-                value={formData.jamTerbang}
                 onChange={handleInputChange}
               />
             </Form.Group>

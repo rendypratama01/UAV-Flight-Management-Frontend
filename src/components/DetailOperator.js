@@ -9,6 +9,7 @@ const DetailOperator = () => {
     nama: 'John Doe',
     role: 'Admin',
     tanggalLahir: '1990-01-01',
+    nik: '187844346719909912',
     email: 'john.doe@example.com',
     telpon: '081234567890'
   };
@@ -56,6 +57,11 @@ const DetailOperator = () => {
                 <span className="font-bold w-36">Tanggal Lahir</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">{operatorDetails.tanggalLahir}</span>
+              </div>
+              <div className="flex mb-2">
+                <span className="font-bold w-36">NIK</span>
+                <span className="w-1 mx-1">:</span>
+                <span className="flex-1 text-left">{operatorDetails.nik}</span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Email</span>
