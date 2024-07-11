@@ -15,7 +15,7 @@ function Wahana() {
   const [formData, setFormData] = useState({
     nama: "",
     deskripsi: "",
-    jam_terbang: "",
+    operasional: "",
     status: true,
     fotoDepan: null,
     fotoBelakang: null,
@@ -130,63 +130,63 @@ function Wahana() {
       id: 1,
       nama: "Phantom 4 Pro",
       deskripsi: "Lorem ipsum dolor sit amet",
-      jam_terbang: "120 jam",
+      operasional: "120 jam",
       status: true,
     },
     {
       id: 2,
       nama: "Mavic Air 2",
       deskripsi: "Consectetur adipiscing elit",
-      jam_terbang: "80 jam",
+      operasional: "80 jam",
       status: true,
     },
     {
       id: 3,
       nama: "Spark",
       deskripsi: "Sed do eiusmod tempor incididunt",
-      jam_terbang: "50 jam",
+      operasional: "50 jam",
       status: false,
     },
     {
       id: 4,
       nama: "Inspire 2",
       deskripsi: "Ut labore et dolore magna aliqua",
-      jam_terbang: "200 jam",
+      operasional: "200 jam",
       status: true,
     },
     {
       id: 5,
       nama: "Phantom 3 Standard",
       deskripsi: "Ut enim ad minim veniam",
-      jam_terbang: "150 jam",
+      operasional: "150 jam",
       status: true,
     },
     {
       id: 6,
       nama: "Mavic Mini",
       deskripsi: "Quis nostrud exercitation ullamco",
-      jam_terbang: "30 jam",
+      operasional: "30 jam",
       status: false,
     },
     {
       id: 7,
       nama: "Phantom 4 Advanced",
       deskripsi: "Laboris nisi ut aliquip ex ea commodo consequat",
-      jam_terbang: "180 jam",
+      operasional: "180 jam",
       status: true,
     },
     {
       id: 8,
       nama: "Mavic 2 Pro",
       deskripsi: "Duis aute irure dolor in reprehenderit",
-      jam_terbang: "100 jam",
+      operasional: "100 jam",
       status: true,
     },
     {
       id: 9,
       nama: "Phantom 4",
       deskripsi: "Excepteur sint occaecat cupidatat non proident",
-      jam_terbang: "160 jam",
+      operasional: "160 jam",
       status: false,
     },
     {
@@ -194,7 +194,7 @@ function Wahana() {
       nama: "Mavic Air",
       deskripsi:
         "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-      jam_terbang: "90 jam",
+      operasional: "90 jam",
       status: true,
     },
   ];
@@ -252,13 +252,13 @@ function Wahana() {
                   />
                 </Form.Group>
 
-                <Form.Group controlId="formJamTerbang" className="mt-3">
-                  <Form.Label>Jam Terbang</Form.Label>
+                <Form.Group controlId="formOperasional" className="mt-3">
+                  <Form.Label>Operasional</Form.Label>
                   <Form.Control
-                    type="text"
-                    placeholder="Masukkan jam terbang"
-                    name="jam_terbang"
-                    value={formData.jam_terbang}
+                    type="number"
+                    placeholder="Masukkan jam operasional"
+                    name="operasional"
+                    value={formData.operasional}
                     onChange={handleInputChange}
                   />
                 </Form.Group>
