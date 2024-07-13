@@ -19,8 +19,7 @@ function Maintenance() {
     tanggal: "",
     namaTeknisi: "",
     biaya: "",
-    fotoSebelum: [],
-    fotoSesudah: [],
+    foto: [],
   });
 
   const handleShow = () => setShowModal(true);
@@ -315,46 +314,23 @@ function Maintenance() {
               </Tab>
 
               <Tab eventKey="foto" title="Foto">
-                <Form.Group controlId="formFotoSebelum" className="mt-3">
-                  <Form.Label>Upload Foto Sebelum Perbaikan</Form.Label>
+                <Form.Group controlId="formFoto" className="mt-3">
+                  <Form.Label>Upload Foto Perbaikan</Form.Label>
                   <Form.Control
                     type="file"
-                    name="fotoSebelum"
+                    name="foto"
                     multiple
                     onChange={handleFileChange}
                   />
                 </Form.Group>
 
                 <div className="mt-3">
-                  {formData.fotoSebelum.length > 0 &&
-                    formData.fotoSebelum.map((foto, index) => (
+                  {formData.foto.length > 0 &&
+                    formData.foto.map((foto, index) => (
                       <img
                         key={index}
                         src={foto}
-                        alt={`Sebelum ${index + 1}`}
-                        className="img-thumbnail mr-2"
-                        style={{ width: "100px", height: "100px" }}
-                      />
-                    ))}
-                </div>
-
-                <Form.Group controlId="formFotoSesudah" className="mt-3">
-                  <Form.Label>Upload Foto Sesudah Perbaikan</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="fotoSesudah"
-                    multiple
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-
-                <div className="mt-3">
-                  {formData.fotoSesudah.length > 0 &&
-                    formData.fotoSesudah.map((foto, index) => (
-                      <img
-                        key={index}
-                        src={foto}
-                        alt={`Sesudah ${index + 1}`}
+                        alt={` ${index + 1}`}
                         className="img-thumbnail mr-2"
                         style={{ width: "100px", height: "100px" }}
                       />

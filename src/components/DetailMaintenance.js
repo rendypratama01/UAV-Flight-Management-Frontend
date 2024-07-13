@@ -13,8 +13,7 @@ const DetailMaintenance = () => {
     biaya: "Rp 500000",
   };
 
-  const imagesBefore = [image, image, image]; // Replace with actual images
-  const imagesAfter = [image, image, image]; // Replace with actual images
+  const foto = [image, image, image]; // Replace with actual images
 
   return (
     <div className="absolute ml-cl7 mr-cr1 mt-ct1">
@@ -75,26 +74,13 @@ const DetailMaintenance = () => {
           <Tab eventKey="dokumentasi" title="Dokumentasi">
             <div className="mt-3">
               <div className="mb-6">
-                <h4 className="text-lg font-semibold text-gray-800">Before</h4>
+                <h4 className="text-lg font-semibold text-gray-800">Foto Perbaikan</h4>
                 <div className="grid grid-cols-3 gap-4">
-                  {imagesBefore.map((imgSrc, index) => (
+                  {foto.map((imgSrc, index) => (
                     <img
                       key={index}
                       src={imgSrc}
-                      alt={`Before ${index + 1}`}
-                      className="w-full h-auto"
-                    />
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="text-lg font-semibold text-gray-800">After</h4>
-                <div className="grid grid-cols-3 gap-4">
-                  {imagesAfter.map((imgSrc, index) => (
-                    <img
-                      key={index}
-                      src={imgSrc}
-                      alt={`After ${index + 1}`}
+                      alt={`${index + 1}`}
                       className="w-full h-auto"
                     />
                   ))}
