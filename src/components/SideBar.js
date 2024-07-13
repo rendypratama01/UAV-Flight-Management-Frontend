@@ -40,19 +40,10 @@ const SideBar = () => {
           UAV Flight
         </Typography>
       </div>
-
-      <p className="px-4 font-bold">Menu</p>
+      <hr className="my-2 border-black w-72 mx-auto" />
+      {/* <p className="px-4 font-bold">Menu</p> */}
 
       <List className="flex-grow">
-      <a href={profilePath} className="no-underline hover:no-underline text-inherit">
-      <ListItem className="hover:text-new-200">
-            <ListItemPrefix>
-              <CgProfile className="h-5 w-5" />
-            </ListItemPrefix>
-            Profil
-          </ListItem>
-          </a>
-
         <a href={dashboardPath} className="no-underline hover:no-underline text-inherit">
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
@@ -104,6 +95,17 @@ const SideBar = () => {
               <FaTools className="h-5 w-5" />
             </ListItemPrefix>
             Komponen
+          </ListItem>
+        </a>
+
+        <hr className="my-2 border-black w-72 mx-auto" />
+
+        <a href={profilePath} className="no-underline hover:no-underline text-inherit">
+            <ListItem className="hover:text-new-200">
+              <ListItemPrefix>
+                <CgProfile className="h-5 w-5" />
+              </ListItemPrefix>
+            Profil
           </ListItem>
         </a>
 
