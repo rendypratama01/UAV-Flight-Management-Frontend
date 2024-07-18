@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import ReactDOM from 'react-dom';
 import {
   Card,
   Typography,
@@ -26,23 +27,27 @@ import {
 } from "../routes";
 
 const SideBar = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogoutShow = () => setShowLogoutModal(true);
+  const handleLogoutClose = () => setShowLogoutModal(false);
+
+  const handleLogoutConfirm = () => {
+    // Handle logout logic here
+    window.location.href = loginPath;
+  };
+
   return (
     <Card className="h-screen w-full max-w-[20rem] px-2 fixed shadow-xl shadow-blue-gray-900/5 bg-[#F1F2F7]">
       <div className="mb-2 flex items-center gap-4 p-4">
         <a href={rootPath}>
-          <img
-            src={logo}
-            alt="brand"
-            className="h-20 w-20"
-          />
+          <img src={logo} alt="brand" className="h-20 w-20" />
         </a>
         <Typography variant="h5" className="text-new-200">
           UAV Flight
         </Typography>
       </div>
       <hr className="my-2 border-black w-72 mx-auto" />
-      {/* <p className="px-4 font-bold">Menu</p> */}
-
       <List className="flex-grow">
         <a href={dashboardPath} className="no-underline hover:no-underline text-inherit">
           <ListItem className="hover:text-new-200">
@@ -101,40 +106,47 @@ const SideBar = () => {
         <hr className="my-2 border-black w-72 mx-auto" />
 
         <a href={profilePath} className="no-underline hover:no-underline text-inherit">
-            <ListItem className="hover:text-new-200">
-              <ListItemPrefix>
-                <CgProfile className="h-5 w-5" />
-              </ListItemPrefix>
-            Profil
-          </ListItem>
-        </a>
-
-        <a href={loginPath} className="no-underline hover:no-underline text-inherit">
-          <ListItem className="hover:text-new-200">
-            <ListItemPrefix>
-            <FiLogOut className="h-5 w-5" />
-            </ListItemPrefix>
-            Keluar
-          </ListItem>
-        </a>
-
-      </List>
-
-
-      {/* <div className="mt-auto">
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <CgProfile className="h-5 w-5" />
             </ListItemPrefix>
-            Profile
+            Profil
           </ListItem>
-          <ListItem className="hover:text-new-200">
-            <ListItemPrefix>
-              <FiLogOut className="h-5 w-5" />
-            </ListItemPrefix>
-            Log Out
-          </ListItem>
-      </div> */}
+        </a>
+
+        <ListItem className="hover:text-new-200 cursor-pointer" onClick={handleLogoutShow}>
+          <ListItemPrefix>
+            <FiLogOut className="h-5 w-5" />
+          </ListItemPrefix>
+          Keluar
+        </ListItem>
+      </List>
+
+      {/* Modal for logout confirmation */}
+      {showLogoutModal &&
+        ReactDOM.createPortal(
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Konfirmasi Keluar</h2>
+              <p className="mb-4">Apakah Anda yakin ingin keluar?</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  onClick={handleLogoutClose}
+                >
+                  Batal
+                </button>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={handleLogoutConfirm}
+                >
+                  Keluar
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </Card>
   );
 };
