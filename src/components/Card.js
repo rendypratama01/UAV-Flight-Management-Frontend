@@ -6,7 +6,6 @@ import { FaUserAlt, FaTasks, FaTools } from "react-icons/fa";
 const Card = () => {
   return (
     <div className="flex gap-3">
-
       <div className="flex flex-row pl-6 pr-10 py-10 overflow-hidden bg-white rounded-xl shadow-lg ">
         <div className="rounded-full h-14 w-14 flex items-center justify-center bg-red-900">
           <FaTasks className="text-2xl text-white" />
