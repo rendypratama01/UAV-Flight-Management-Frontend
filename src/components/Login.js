@@ -40,7 +40,7 @@ function Login() {
               <input
                 id="username"
                 name="username"
-                type="text"
+                type="email"
                 className="border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                 value={formData.username}
                 onChange={handleChange}
