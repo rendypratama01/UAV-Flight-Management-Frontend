@@ -6,6 +6,7 @@ import { IoMdDownload } from "react-icons/io";
 import { MdUpload, MdDelete } from "react-icons/md";
 import image from "../assets/img/image.png";
 import { FaWind } from "react-icons/fa"; // Import icon untuk cuaca
+import Select from "react-select";
 
 const DetailMisi = () => {
   const [openAccordion, setOpenAccordion] = useState(null);
@@ -33,6 +34,9 @@ const DetailMisi = () => {
     noticeToAirman: null,
     izinLokasiTerbang: null,
   });
+  const [pilot, setPilot] = useState(null);
+  const [gcs, setGcs] = useState(null);
+  const [wahana, setWahana] = useState(null);
 
   const handleToggle = (index) => {
     setOpenAccordion(openAccordion === index ? null : index);
@@ -100,20 +104,47 @@ const DetailMisi = () => {
     ],
   });
 
+  const pilotOptions = [
+    { value: "pilot1", label: "Pilot 1" },
+    { value: "pilot2", label: "Pilot 2" },
+    { value: "pilot3", label: "Pilot 3" },
+  ];
+
+  const gcsOptions = [
+    { value: "gcs1", label: "GCS 1" },
+    { value: "gcs2", label: "GCS 2" },
+    { value: "gcs3", label: "GCS 3" },
+  ];
+
+  const wahanaOptions = [
+    { value: "wahana1", label: "Wahana 1" },
+    { value: "wahana2", label: "Wahana 2" },
+    { value: "wahana3", label: "Wahana 3" },
+  ];
+  
   const formatDateTime = (datetime) => {
-    const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
+    };
     const date = new Date(datetime);
-    return date.toLocaleDateString('id-ID', options).replace(',', ' WIB');
+    return date.toLocaleDateString("id-ID", options).replace(",", " WIB");
   };
 
   const calculateDuration = (start, end) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
     const durationMs = endDate - startDate;
-    
+
     const durationHrs = Math.floor(durationMs / (1000 * 60 * 60));
-    const durationMins = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+    const durationMins = Math.floor(
+      (durationMs % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
     return `${durationHrs} Jam ${durationMins} Menit`;
   };
 
@@ -239,7 +270,7 @@ const DetailMisi = () => {
   const handleModalSave = () => {
     setPenerbanganDetails((prevDetails) => ({
       ...prevDetails,
-      statusMisi: statusMisi,  // Update status misi
+      statusMisi: statusMisi, // Update status misi
     }));
     setShowModal(false);
   };
@@ -249,16 +280,22 @@ const DetailMisi = () => {
   const handleAddModalSave = () => {
     const formattedStartTime = formatDateTime(formData.waktuMulai);
     const formattedEndTime = formatDateTime(formData.waktuSelesai);
-  
-    const duration = calculateDuration(formData.waktuMulai, formData.waktuSelesai);
-  
+
+    const duration = calculateDuration(
+      formData.waktuMulai,
+      formData.waktuSelesai
+    );
+
     setPenerbanganDetails({
       ...penerbanganDetails,
       waktuMulai: formattedStartTime,
       waktuSelesai: formattedEndTime,
       durasi: duration,
+      pilot: pilot ? pilot.label : null,
+      gcs: gcs ? gcs.label : null,
+      wahana: wahana ? wahana.label : null,
     });
-  
+
     setShowAddModal(false);
   };
 
@@ -348,69 +385,103 @@ const DetailMisi = () => {
                 Tambah
               </button>
             </div>
-            <div className="mt-3 px-2 py-3">
-              <h4>Informasi</h4>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Durasi</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {penerbanganDetails.durasi}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Status Misi</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {penerbanganDetails.statusMisi}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Waktu Mulai</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {penerbanganDetails.waktuMulai}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Waktu Selesai</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {penerbanganDetails.waktuSelesai}
-                </span>
+
+            <div className="mt-3 px-2 py-2">
+              <div className="bg-white border shadow-md rounded-lg p-4">
+                <h4 className="text-lg font-bold mb-3">
+                  Informasi Penerbangan
+                </h4>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">Durasi</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.durasi}
+                  </span>
+                </div>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">Status Misi</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.statusMisi}
+                  </span>
+                </div>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">Waktu Mulai</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.waktuMulai}
+                  </span>
+                </div>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">Waktu Selesai</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.waktuSelesai}
+                  </span>
+                </div>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">Pilot</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.pilot}
+                  </span>
+                </div>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">GCS</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.gcs}
+                  </span>
+                </div>
+                <div className="flex mb-2">
+                  <span className="font-bold w-36">Wahana</span>
+                  <span className="w-1 mx-1">:</span>
+                  <span className="flex-1 text-left">
+                    {penerbanganDetails.wahana}
+                  </span>
+                </div>
               </div>
             </div>
 
+            <hr className="my-2 border-black w-full mx-auto" />
+
             <div className="px-2 py-3">
               <h4>Flight Plan</h4>
-              <div className="flex justify-center items-center">
-                <img src={image} alt="Flight Plan" width="400px" />
+              <div className="p-4 flex justify-center items-center">
+                <img
+                  src={image}
+                  alt="Flight Plan"
+                  width="100%"
+                  style={{ maxWidth: "400px" }}
+                />
               </div>
             </div>
 
             <Container className="px-2 py-3">
               <h4>Cuaca</h4>
-              {renderWeatherData()}
+              <div className="p-4">{renderWeatherData()}</div>
             </Container>
 
             <Container className="px-2 py-3">
               <h4>Berkas</h4>
-              {renderFiles()}
+              <div className="p-4">{renderFiles()}</div>
             </Container>
 
             <Container className="px-2 py-3">
               <h4>Checklist</h4>
-              {renderChecklist()}
+              <div className="p-4">{renderChecklist()}</div>
             </Container>
 
-            <div className="px-2 py-3 flex justify-start">
+            <div className="px-2 py-1 flex justify-start">
               <button
-                className={`py-2 px-4 rounded-md bg-green-500 text-white`}
+                className="py-2 px-4 rounded-md bg-green-500 text-white"
                 onClick={() => setShowModal(true)}
               >
                 Selesai
               </button>
             </div>
           </Tab>
+
           <Tab eventKey="dokumentasi" title="Dokumentasi">
             <div className="mt-3 px-2 flex justify-between">
               <button
@@ -524,6 +595,39 @@ const DetailMisi = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, waktuSelesai: e.target.value })
                 }
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="pilot" className="form-label">
+                Pilot
+              </label>
+              <Select
+                id="pilot"
+                options={pilotOptions}
+                value={pilot}
+                onChange={setPilot}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="gcs" className="form-label">
+                GCS
+              </label>
+              <Select
+                id="gcs"
+                options={gcsOptions}
+                value={gcs}
+                onChange={setGcs}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="wahana" className="form-label">
+                Wahana
+              </label>
+              <Select
+                id="wahana"
+                options={wahanaOptions}
+                value={wahana}
+                onChange={setWahana}
               />
             </div>
           </form>

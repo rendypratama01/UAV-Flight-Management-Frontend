@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import { detailMisiPath } from "../routes";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import Select from "react-select";
 
 const Misi = () => {
   const [showModal, setShowModal] = useState(false);
@@ -18,6 +19,7 @@ const Misi = () => {
     kategori: "",
     tanggalMisi: "",
     pilots: [],
+    gcs: [],
     telemetry: "",
     remoteControl: "",
     videoSender: "",
@@ -36,17 +38,23 @@ const Misi = () => {
     });
   };
 
+  const handleSelectChange = (selectedOptions, name) => {
+    setFormData({
+      ...formData,
+      [name]: selectedOptions ? selectedOptions.map(option => option.value) : [],
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form Data Submitted: ", formData);
-    // Handle form submission logic here, e.g., send data to backend
     handleClose();
   };
 
   const customStyles = {
     headCells: {
       style: {
-        backgroundColor: "#EAEAEA", // Change to your desired color
+        backgroundColor: "#EAEAEA",
       },
     },
   };
@@ -238,6 +246,30 @@ const Misi = () => {
     },
   ];
 
+  const pilotOptions = [
+    { value: "pilot1", label: "Pilot 1" },
+    { value: "pilot2", label: "Pilot 2" },
+    { value: "pilot3", label: "Pilot 3" },
+  ];
+
+  const gcsOptions = [
+    { value: "gcs", label: "GCS 1" },
+    { value: "gcs2", label: "GCS 2" },
+    { value: "gcs3", label: "GCS 3" },
+  ];
+
+  const wahanaOptions = [
+    { value: "wahana1", label: "Wahana 1" },
+    { value: "wahana2", label: "Wahana 2" },
+    { value: "wahana3", label: "Wahana 3" },
+  ];
+
+  const komponenOptions = [
+    { value: "komponen1", label: "Komponen 1" },
+    { value: "komponen2", label: "Komponen 2" },
+    { value: "komponen3", label: "Komponen 3" },
+  ];
+
   return (
     <div className="ml-cl7">
       <h3 className="pt-10 text-3xl text-new-300">Misi</h3>
@@ -321,17 +353,28 @@ const Misi = () => {
               <Tab eventKey="pilots" title="Pilot">
                 <Form.Group controlId="formPilots">
                   <Form.Label>Pilot</Form.Label>
-                  <Form.Control
-                    as="select"
+                  <Select
+                    isMulti
                     name="pilots"
-                    multiple
-                    value={formData.pilots}
-                    onChange={handleInputChange}
-                  >
-                    <option value="pilot1">Pilot 1</option>
-                    <option value="pilot2">Pilot 2</option>
-                    <option value="pilot3">Pilot 3</option>
-                  </Form.Control>
+                    options={pilotOptions}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pilots")}
+                  />
+                </Form.Group>
+              </Tab>
+
+              <Tab eventKey="gcs" title="GCS">
+                <Form.Group controlId="formPilots">
+                  <Form.Label>GCS Operator</Form.Label>
+                  <Select
+                    isMulti
+                    name="gcs"
+                    options={gcsOptions}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={(selectedOptions) => handleSelectChange(selectedOptions, "gcs")}
+                  />
                 </Form.Group>
               </Tab>
 
@@ -380,50 +423,45 @@ const Misi = () => {
               </Tab>
 
               <Tab eventKey="wahana" title="Wahana">
-                <Form.Group controlId="formWahana" className="mt-3">
-                  <Form.Label>Wahana</Form.Label>
-                  <Form.Control
-                    as="select"
-                    multiple
-                    name="wahana"
-                    value={formData.wahana}
-                    onChange={handleInputChange}
-                  >
-                    <option value="wahana1">Wahana 1</option>
-                    <option value="wahana2">Wahana 2</option>
-                    <option value="wahana3">Wahana 3</option>
-                  </Form.Control>
-                </Form.Group>
-              </Tab>
+                   <Form.Group controlId="formWahana">
+                     <Form.Label>Wahana</Form.Label>
+                     <Select
+                       isMulti
+                       name="wahana"
+                       options={wahanaOptions}
+                       className="basic-multi-select"
+                       classNamePrefix="select"
+                       onChange={(selectedOptions) => handleSelectChange(selectedOptions, "wahana")}
+                     />
+                   </Form.Group>
+                 </Tab>
 
-              <Tab eventKey="komponen" title="Komponen">
-                <Form.Group controlId="formKomponen" className="mt-3">
-                  <Form.Label>Komponen</Form.Label>
-                  <Form.Control
-                    as="select"
-                    multiple
-                    name="komponen"
-                    value={formData.komponen}
-                    onChange={handleInputChange}
-                  >
-                    <option value="komponen1">Komponen 1</option>
-                    <option value="komponen2">Komponen 2</option>
-                    <option value="komponen3">Komponen 3</option>
-                  </Form.Control>
-                </Form.Group>
-              </Tab>
-            </Tabs>
+                 <Tab eventKey="komponen" title="Komponen">
+                   <Form.Group controlId="formKomponen">
+                     <Form.Label>Komponen</Form.Label>
+                     <Select
+                       isMulti
+                       name="komponen"
+                       options={komponenOptions}
+                       className="basic-multi-select"
+                       classNamePrefix="select"
+                       onChange={(selectedOptions) => handleSelectChange(selectedOptions, "komponen")}
+                     />
+                   </Form.Group>
+                 </Tab>
+               </Tabs>
 
-            <div className="text-center mt-4">
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </div>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </div>
-  );
-};
+               <div className="text-center mt-4">
+                 <Button variant="primary" type="submit">
+                   Submit
+                 </Button>
+               </div>
+             </Form>
+           </Modal.Body>
+         </Modal>
+       </div>
+     );
+   };
 
-export default Misi;
+   export default Misi;
+
