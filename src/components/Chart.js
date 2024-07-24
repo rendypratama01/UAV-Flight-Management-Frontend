@@ -10,6 +10,7 @@ import {
   CategoryScale,
   LinearScale,
   ArcElement,
+  Filler, // Import Filler plugin
 } from "chart.js";
 import { FaWind } from "react-icons/fa";
 
@@ -22,7 +23,8 @@ ChartJS.register(
   PointElement,
   CategoryScale,
   LinearScale,
-  ArcElement
+  ArcElement,
+  Filler // Register Filler plugin
 );
 
 // Data for Line Chart
@@ -55,14 +57,14 @@ const getLineChartData = (year, chartType) => {
           data: data[year].misi,
           borderColor: "#dc2626",
           backgroundColor: "rgba(59, 130, 246, 0.1)",
-          fill: true,
+          fill: true, // Ensure fill is set
         },
         {
           label: "Perbaikan",
           data: data[year].perbaikan,
           borderColor: "#0891b2",
           backgroundColor: "rgba(59, 130, 246, 0.1)",
-          fill: true,
+          fill: true, // Ensure fill is set
         },
       ],
     };
@@ -79,21 +81,21 @@ const getLineChartData = (year, chartType) => {
           data: data[year].wahana,
           borderColor: "#2563eb",
           backgroundColor: "rgba(248, 113, 113, 0.1)",
-          fill: true,
+          fill: true, // Ensure fill is set
         },
         {
           label: "Operator",
           data: data[year].operator,
           borderColor: "#fb923c",
           backgroundColor: "rgba(59, 130, 246, 0.1)",
-          fill: true,
+          fill: true, // Ensure fill is set
         },
         {
           label: "Komponen",
           data: data[year].komponen,
           borderColor: "#16a34a",
           backgroundColor: "rgba(52, 211, 153, 0.1)",
-          fill: true,
+          fill: true, // Ensure fill is set
         },
       ],
     };
@@ -227,35 +229,34 @@ function Chart() {
           </div>
         </div>
         
-          <div class="flex flex-col bg-white rounded-xl duration-300 p-4 w-1/3 shadow-lg">
-            <div class="font-bold text-xl text-center">Bandar Lampung</div>
-            <div class="text-sm text-gray-500 text-center">
-              Thursday 10 May 2024
+        <div className="flex flex-col bg-white rounded-xl duration-300 p-4 w-1/3 shadow-lg">
+          <div className="font-bold text-xl text-center">Bandar Lampung</div>
+          <div className="text-sm text-gray-500 text-center">
+            Thursday 10 May 2024
+          </div>
+          <div className="mt-6 text-6xl self-center inline-flex items-center justify-center rounded-lg text-gray-900 h-24 w-24">
+            <FaWind className="h-20 w-20" />
+          </div>
+          <div className="flex flex-row items-center justify-center mt-6 mb-cb1">
+            <div className="font-medium text-4xl">50 m/s</div>
+            <div className="flex flex-col items-center ml-6"></div>
+          </div>
+          <div className="flex flex-row justify-between mt-6">
+            <div className="flex flex-col items-center">
+              <div className="font-medium text-sm">Temperatur</div>
+              <div className="text-sm text-gray-500">28°C</div>
             </div>
-            <div class="mt-6 text-6xl self-center inline-flex items-center justify-center rounded-lg text-gray-900 h-24 w-24">
-              <FaWind className="h-20 w-20" />
+            <div className="flex flex-col items-center">
+              <div className="font-medium text-sm">Humidity</div>
+              <div className="text-sm text-gray-500">68%</div>
             </div>
-            <div class="flex flex-row items-center justify-center mt-6 mb-cb1">
-              <div class="font-medium text-4xl">50 m/s</div>
-              <div class="flex flex-col items-center ml-6"></div>
-            </div>
-            <div class="flex flex-row justify-between mt-6">
-              <div class="flex flex-col items-center">
-                <div class="font-medium text-sm">Temperatur</div>
-                <div class="text-sm text-gray-500">28°C</div>
-              </div>
-              <div class="flex flex-col items-center">
-                <div class="font-medium text-sm">Humidity</div>
-                <div class="text-sm text-gray-500">68%</div>
-              </div>
-              <div class="flex flex-col items-center">
-                <div class="font-medium text-sm">Visibility</div>
-                <div class="text-sm text-gray-500">10km</div>
-              </div>
+            <div className="flex flex-col items-center">
+              <div className="font-medium text-sm">Visibility</div>
+              <div className="text-sm text-gray-500">10km</div>
             </div>
           </div>
         </div>
-   
+      </div>
     </div>
   );
 }
