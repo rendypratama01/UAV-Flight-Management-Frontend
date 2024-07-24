@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import {
   Card,
   Typography,
@@ -25,16 +26,18 @@ import {
   loginPath,
   profilePath,
 } from "../routes";
+import authService from '../services/auth.service'; // Import authService
 
 const SideBar = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleLogoutShow = () => setShowLogoutModal(true);
   const handleLogoutClose = () => setShowLogoutModal(false);
 
   const handleLogoutConfirm = () => {
-    // Handle logout logic here
-    window.location.href = loginPath;
+    authService.logout(); // Call the logout function
+    navigate(loginPath); // Navigate to login page
   };
 
   return (

@@ -1,22 +1,29 @@
 import React, { useState } from 'react';
-import { dashboardPath } from '../routes';
+import { useNavigate } from 'react-router-dom';
+import authService from '../services/auth.service';
 import logo from "../assets/img/logo.png";
+import { dashboardPath } from '../routes';
 
 function Login() {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Data Submitted: ', formData);
-    // Handle form submission logic here, e.g., send data to backend
+    try {
+      const data = await authService.login(formData.email, formData.password);
+      console.log('Login Response:', data); // Display the entire login response in the console
+      navigate(dashboardPath);
+    } catch (error) {
+      // Assuming error response structure is { msg: 'Wrong Password' }
+      setError(error.response?.data?.msg || 'Invalid email or password');
+    }
   };
 
   return (
@@ -34,15 +41,15 @@ function Login() {
           </div>
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
-              <label className="block text-gray-600 text-sm font-semibold mb-2" htmlFor="username">
-                Username
+              <label className="block text-gray-600 text-sm font-semibold mb-2" htmlFor="email">
+                Email
               </label>
               <input
-                id="username"
-                name="username"
+                id="email"
+                name="email"
                 type="email"
                 className="border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-                value={formData.username}
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
@@ -61,14 +68,13 @@ function Login() {
                 required
               />
             </div>
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <div className="flex items-center justify-center">
               <button
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               >
-                <a href={dashboardPath} className="no-underline hover:no-underline text-inherit">
-                  Login
-                </a>
+                Login
               </button>
             </div>
           </form>
