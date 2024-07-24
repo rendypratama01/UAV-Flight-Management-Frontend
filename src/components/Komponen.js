@@ -1,199 +1,4 @@
-// import React from 'react'
-// import DataTable from "react-data-table-component";
-// import { FaEdit } from "react-icons/fa";
-// import { MdDelete } from "react-icons/md";
-// import { TbListDetails } from "react-icons/tb";
-// import { FaPlus } from "react-icons/fa";
-// import Button from 'react-bootstrap/Button';
-// import { detailKomponenPath } from '../routes';
-
-// function Komponen() {
-//   const customStyles = {
-//     headCells: {
-//       style: {
-//         backgroundColor: '#EAEAEA',  // Change to your desired color
-//       },
-//     },
-//   };
-
-//     const columns = [
-//         {
-//           name: "Nama",
-//           selector: (row) => row.nama,
-//           sortable: true,
-//         },
-//         {
-//           name: "Deskripsi",
-//           selector: (row) => row.deskripsi,
-//           sortable: true,
-//         },
-//         {
-//           name: "ID Komponen",
-//           selector: (row) => row.idkomponen,
-//           sortable: true,
-//         },
-//         {
-//           name: "",
-//           cell: (row) =>(
-//             <div className="flex gap-3">
-//             <button className="text-gray-700"> <a href={detailKomponenPath} className="no-underline hover:no-underline text-inherit"><TbListDetails className="text-2xl"/></a></button>
-//             <button className="text-blue-900"><FaEdit className="text-2xl"/></button>
-//             <button className="text-red-600"><MdDelete className="text-2xl"/></button>
-//             </div>
-//           ),
-//         },
-//       ];
-    
-      // const data = [
-      //   {
-      //       "id": 1,
-      //       "nama": "Baterai UAV",
-      //       "deskripsi": "Lorem ipsum dolor sit amet",
-      //       "idkomponen": "COMP-001"
-      //     },
-      //     {
-      //       "id": 2,
-      //       "nama": "Motor Brushless UAV",
-      //       "deskripsi": "Consectetur adipiscing elit",
-      //       "idkomponen": "COMP-002"
-      //     },
-      //     {
-      //       "id": 3,
-      //       "nama": "Sistem Navigasi Inertial UAV",
-      //       "deskripsi": "Sed do eiusmod tempor incididunt",
-      //       "idkomponen": "COMP-003"
-      //     },
-      //     {
-      //       "id": 4,
-      //       "nama": "Kamera Gimbal UAV",
-      //       "deskripsi": "Ut labore et dolore magna aliqua",
-      //       "idkomponen": "COMP-004"
-      //     },
-      //     {
-      //       "id": 5,
-      //       "nama": "Sensor Ultrasonik UAV",
-      //       "deskripsi": "Ut enim ad minim veniam",
-      //       "idkomponen": "COMP-005"
-      //     },
-      //     {
-      //       "id": 6,
-      //       "nama": "Propeler UAV",
-      //       "deskripsi": "Quis nostrud exercitation ullamco",
-      //       "idkomponen": "COMP-006"
-      //     },
-      //     {
-      //       "id": 7,
-      //       "nama": "Sistem Kontrol Penerbangan UAV",
-      //       "deskripsi": "Laboris nisi ut aliquip ex ea commodo consequat",
-      //       "idkomponen": "COMP-007"
-      //     },
-      //     {
-      //       "id": 8,
-      //       "nama": "Antena Komunikasi UAV",
-      //       "deskripsi": "Duis aute irure dolor in reprehenderit",
-      //       "idkomponen": "COMP-008"
-      //     },
-      //     {
-      //       "id": 9,
-      //       "nama": "Modul GPS UAV",
-      //       "deskripsi": "Excepteur sint occaecat cupidatat non proident",
-      //       "idkomponen": "COMP-009"
-      //     },
-      //     {
-      //       "id": 10,
-      //       "nama": "Sistem Kelistrikan UAV",
-      //       "deskripsi": "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-      //       "idkomponen": "COMP-010"
-      //     },
-      //     {
-      //       "id": 11,
-      //       "nama": "Sistem Pengendali UAV",
-      //       "deskripsi": "Lorem ipsum dolor sit amet",
-      //       "idkomponen": "COMP-011"
-      //     },
-      //     {
-      //       "id": 12,
-      //       "nama": "Sistem Pendingin UAV",
-      //       "deskripsi": "Consectetur adipiscing elit",
-      //       "idkomponen": "COMP-012"
-      //     },
-      //     {
-      //       "id": 13,
-      //       "nama": "Sensor Lidar UAV",
-      //       "deskripsi": "Sed do eiusmod tempor incididunt",
-      //       "idkomponen": "COMP-013"
-      //     },
-      //     {
-      //       "id": 14,
-      //       "nama": "Sistem Penerbangan Otonom UAV",
-      //       "deskripsi": "Ut labore et dolore magna aliqua",
-      //       "idkomponen": "COMP-014"
-      //     },
-      //     {
-      //       "id": 15,
-      //       "nama": "Pengontrol Motor UAV",
-      //       "deskripsi": "Ut enim ad minim veniam",
-      //       "idkomponen": "COMP-015"
-      //     },
-      //     {
-      //       "id": 16,
-      //       "nama": "Komputer Penerbangan UAV",
-      //       "deskripsi": "Quis nostrud exercitation ullamco",
-      //       "idkomponen": "COMP-016"
-      //     },
-      //     {
-      //       "id": 17,
-      //       "nama": "Sistem Telemetri UAV",
-      //       "deskripsi": "Laboris nisi ut aliquip ex ea commodo consequat",
-      //       "idkomponen": "COMP-017"
-      //     },
-      //     {
-      //       "id": 18,
-      //       "nama": "Sensor Termal UAV",
-      //       "deskripsi": "Duis aute irure dolor in reprehenderit",
-      //       "idkomponen": "COMP-018"
-      //     },
-      //     {
-      //       "id": 19,
-      //       "nama": "Sistem Pengisian Baterai UAV",
-      //       "deskripsi": "Excepteur sint occaecat cupidatat non proident",
-      //       "idkomponen": "COMP-019"
-      //     },
-      //     {
-      //       "id": 20,
-      //       "nama": "Sistem Penginderaan Jarak Jauh UAV",
-      //       "deskripsi": "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-      //       "idkomponen": "COMP-020"
-      //     }
-    
-      // ];
-    
-//       const handleChange = ({ selectedRows }) => {
-//         console.log("Selected Rows: ", selectedRows);
-//       };
-
-//   return (
-//     <div className="ml-cl7">
-//       <h3 className="pt-10 text-3xl text-new-300">Komponen</h3>
-//       <DataTable
-//         title="Data Komponen"
-//         columns={columns}
-//         data={data}
-//         fixedHeader 
-//         fixedHeaderScrollHeight="530px"
-//         pagination
-//         highlightOnHover
-//         onSelectedRowsChange={handleChange}
-//         actions={<Button style={{ backgroundColor: '#5A6ACF', color: '#ffffff' }} className="d-flex align-items-center"> Tambah <FaPlus className="text-sm"/> </Button> }
-//         customStyles={customStyles}
-//       />
-//     </div>
-//   )
-// }
-
-// export default Komponen
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from "react-data-table-component";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -202,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { detailKomponenPath } from '../routes';
+import komponenService from "../services/komponen.service";
 
 function Komponen() {
   const [showModal, setShowModal] = useState(false);
@@ -215,6 +21,34 @@ function Komponen() {
     tanggalBeli: '',
     foto: null
   });
+  const [komponenData, setKomponenData] = useState([]);
+
+  useEffect(() => {
+    const fetchKomponen = async () => {
+      try {
+        const response = await komponenService.getKomponen();
+        console.log("Fetched Komponen Response:", response);
+
+        // Cek jika respons adalah objek dan memiliki properti 'Komponen'
+        if (
+          typeof response === "object" &&
+          response !== null &&
+          Array.isArray(response.komponen)
+        ) {
+          setKomponenData(response.komponen);
+          console.log("Data successfully");
+        } else {
+          console.error(
+            "Fetched data is not an object or does not contain an array 'komponen'."
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching wahana data:", error);
+      }
+    };
+
+    fetchKomponen();
+  }, []);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
@@ -234,27 +68,51 @@ function Komponen() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted: ", formData);
-    // Here, you can handle the form submission, e.g., sending data to the backend
-    handleClose();
+
+    // Create a FormData instance
+    const dataToSubmit = new FormData();
+
+    // Append form data fields
+    Object.keys(formData).forEach((key) => {
+      if (Array.isArray(formData[key])) {
+        formData[key].forEach((file) => dataToSubmit.append(key, file));
+      } else {
+        dataToSubmit.append(key, formData[key]);
+      }
+    });
+
+    try {
+      const response = await komponenService.addKomponen(dataToSubmit);
+      console.log("Komponen data successfully posted:", response);
+      handleClose(); // Close the modal
+      // Optionally, show a success message or update the data table
+    } catch (error) {
+      console.error("Error posting komponen data:", error);
+      // Optionally, show an error message to the user
+    }
   };
 
   const columns = [
     {
       name: "Nama",
-      selector: (row) => row.nama,
+      selector: (row) => row.nama_komponen,
       sortable: true,
     },
     {
       name: "Deskripsi",
-      selector: (row) => row.deskripsi,
+      selector: (row) => row.deskripsi_komponen,
       sortable: true,
     },
     {
       name: "ID Komponen",
       selector: (row) => row.idkomponen,
+      sortable: true,
+    },
+    {
+      name: "Kategori",
+      selector: (row) => row.kategori,
       sortable: true,
     },
     {
@@ -273,137 +131,13 @@ function Komponen() {
     },
   ];
 
-  const data = [
-    {
-        "id": 1,
-        "nama": "Baterai UAV",
-        "deskripsi": "Lorem ipsum dolor sit amet",
-        "idkomponen": "COMP-001"
-      },
-      {
-        "id": 2,
-        "nama": "Motor Brushless UAV",
-        "deskripsi": "Consectetur adipiscing elit",
-        "idkomponen": "COMP-002"
-      },
-      {
-        "id": 3,
-        "nama": "Sistem Navigasi Inertial UAV",
-        "deskripsi": "Sed do eiusmod tempor incididunt",
-        "idkomponen": "COMP-003"
-      },
-      {
-        "id": 4,
-        "nama": "Kamera Gimbal UAV",
-        "deskripsi": "Ut labore et dolore magna aliqua",
-        "idkomponen": "COMP-004"
-      },
-      {
-        "id": 5,
-        "nama": "Sensor Ultrasonik UAV",
-        "deskripsi": "Ut enim ad minim veniam",
-        "idkomponen": "COMP-005"
-      },
-      {
-        "id": 6,
-        "nama": "Propeler UAV",
-        "deskripsi": "Quis nostrud exercitation ullamco",
-        "idkomponen": "COMP-006"
-      },
-      {
-        "id": 7,
-        "nama": "Sistem Kontrol Penerbangan UAV",
-        "deskripsi": "Laboris nisi ut aliquip ex ea commodo consequat",
-        "idkomponen": "COMP-007"
-      },
-      {
-        "id": 8,
-        "nama": "Antena Komunikasi UAV",
-        "deskripsi": "Duis aute irure dolor in reprehenderit",
-        "idkomponen": "COMP-008"
-      },
-      {
-        "id": 9,
-        "nama": "Modul GPS UAV",
-        "deskripsi": "Excepteur sint occaecat cupidatat non proident",
-        "idkomponen": "COMP-009"
-      },
-      {
-        "id": 10,
-        "nama": "Sistem Kelistrikan UAV",
-        "deskripsi": "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-        "idkomponen": "COMP-010"
-      },
-      {
-        "id": 11,
-        "nama": "Sistem Pengendali UAV",
-        "deskripsi": "Lorem ipsum dolor sit amet",
-        "idkomponen": "COMP-011"
-      },
-      {
-        "id": 12,
-        "nama": "Sistem Pendingin UAV",
-        "deskripsi": "Consectetur adipiscing elit",
-        "idkomponen": "COMP-012"
-      },
-      {
-        "id": 13,
-        "nama": "Sensor Lidar UAV",
-        "deskripsi": "Sed do eiusmod tempor incididunt",
-        "idkomponen": "COMP-013"
-      },
-      {
-        "id": 14,
-        "nama": "Sistem Penerbangan Otonom UAV",
-        "deskripsi": "Ut labore et dolore magna aliqua",
-        "idkomponen": "COMP-014"
-      },
-      {
-        "id": 15,
-        "nama": "Pengontrol Motor UAV",
-        "deskripsi": "Ut enim ad minim veniam",
-        "idkomponen": "COMP-015"
-      },
-      {
-        "id": 16,
-        "nama": "Komputer Penerbangan UAV",
-        "deskripsi": "Quis nostrud exercitation ullamco",
-        "idkomponen": "COMP-016"
-      },
-      {
-        "id": 17,
-        "nama": "Sistem Telemetri UAV",
-        "deskripsi": "Laboris nisi ut aliquip ex ea commodo consequat",
-        "idkomponen": "COMP-017"
-      },
-      {
-        "id": 18,
-        "nama": "Sensor Termal UAV",
-        "deskripsi": "Duis aute irure dolor in reprehenderit",
-        "idkomponen": "COMP-018"
-      },
-      {
-        "id": 19,
-        "nama": "Sistem Pengisian Baterai UAV",
-        "deskripsi": "Excepteur sint occaecat cupidatat non proident",
-        "idkomponen": "COMP-019"
-      },
-      {
-        "id": 20,
-        "nama": "Sistem Penginderaan Jarak Jauh UAV",
-        "deskripsi": "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-        "idkomponen": "COMP-020"
-      }
-
-  ];
-
   return (
     <div className="ml-cl7">
       <h3 className="pt-10 text-3xl text-new-300">Komponen</h3>
       <DataTable
         title="Data Komponen"
         columns={columns}
-        data={data}
+        data={komponenData}
         fixedHeader 
         fixedHeaderScrollHeight="530px"
         pagination
