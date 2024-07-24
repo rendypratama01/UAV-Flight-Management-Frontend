@@ -13,8 +13,9 @@ import WahanaPage from "./pages/WahanaPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import KomponenPage from "./pages/KomponenPage";
 import LoginPage from "./pages/LoginPage";
-import { rootPath, dashboardPath, misiPath, operatorPath, wahanaPath, maintenancePath, komponenPath, detailMisiPath, detailOperatorPath, detailWahanaPath, detailMaintenancePath, detailKomponenPath, loginPath, profilePath } from "./routes";
 import ProfilePage from "./pages/ProfilePage";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
+import { rootPath, dashboardPath, misiPath, operatorPath, wahanaPath, maintenancePath, komponenPath, detailMisiPath, detailOperatorPath, detailWahanaPath, detailMaintenancePath, detailKomponenPath, loginPath, profilePath } from "./routes";
 
 function App() {
   const location = useLocation();
@@ -25,21 +26,20 @@ function App() {
       {showSideBar && <SideBar />}
       <main>
         <Routes>
-          {[rootPath, dashboardPath].map((path, index) => (
-            <Route path={path} element={<DashboardPage />} key={index} />
-          ))}
           <Route path={loginPath} element={<LoginPage />} />
-          <Route path={profilePath} element={<ProfilePage />} />
-          <Route path={misiPath} element={<MisiPage />} />
-          <Route path={operatorPath} element={<OperatorPage />} />
-          <Route path={wahanaPath} element={<WahanaPage />} />
-          <Route path={maintenancePath} element={<MaintenancePage />} />
-          <Route path={komponenPath} element={<KomponenPage />} />
-          <Route path={detailMisiPath} element={<DetailMisiPage />} />
-          <Route path={detailOperatorPath} element={<DetailOperatorPage />} />
-          <Route path={detailWahanaPath} element={<DetailWahanaPage />} />
-          <Route path={detailMaintenancePath} element={<DetailMaintenancePage />} />
-          <Route path={detailKomponenPath} element={<DetailKomponenPage />} />
+          <Route path={rootPath} element={<ProtectedRoute element={DashboardPage} />} />
+          <Route path={dashboardPath} element={<ProtectedRoute element={DashboardPage} />} />
+          <Route path={profilePath} element={<ProtectedRoute element={ProfilePage} />} />
+          <Route path={misiPath} element={<ProtectedRoute element={MisiPage} />} />
+          <Route path={operatorPath} element={<ProtectedRoute element={OperatorPage} />} />
+          <Route path={wahanaPath} element={<ProtectedRoute element={WahanaPage} />} />
+          <Route path={maintenancePath} element={<ProtectedRoute element={MaintenancePage} />} />
+          <Route path={komponenPath} element={<ProtectedRoute element={KomponenPage} />} />
+          <Route path={detailMisiPath} element={<ProtectedRoute element={DetailMisiPage} />} />
+          <Route path={detailOperatorPath} element={<ProtectedRoute element={DetailOperatorPage} />} />
+          <Route path={detailWahanaPath} element={<ProtectedRoute element={DetailWahanaPage} />} />
+          <Route path={detailMaintenancePath} element={<ProtectedRoute element={DetailMaintenancePage} />} />
+          <Route path={detailKomponenPath} element={<ProtectedRoute element={DetailKomponenPage} />} />
         </Routes>
       </main>
     </div>
