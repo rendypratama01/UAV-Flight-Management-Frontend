@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -6,9 +6,9 @@ import { TbListDetails } from "react-icons/tb";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { detailWahanaPath } from "../routes";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import wahanaService from "../services/wahana.service";
 
 function Wahana() {
   const [showModal, setShowModal] = useState(false);
@@ -16,14 +16,8 @@ function Wahana() {
     nama: "",
     deskripsi: "",
     operasional: "",
-    status: true,
-    fotoDepan: null,
-    fotoBelakang: null,
-    fotoKanan: null,
-    fotoKiri: null,
-    fotoAtas: null,
-    fotoBawah: null,
-    type: "",
+    photos: [],
+    tipe: "",
     wingspan: "",
     length: "",
     material: "",
@@ -31,12 +25,40 @@ function Wahana() {
     baterai: "",
     payload: "",
     durasi: "",
-    cakupan: "",
+    cangkupan: "",
     ketinggian: "",
     kapasitas: "",
     rotor: "",
   });
   const [selectedType, setSelectedType] = useState("");
+  const [wahanaData, setWahanaData] = useState([]);
+
+  useEffect(() => {
+    const fetchWahana = async () => {
+      try {
+        const response = await wahanaService.getWahana();
+        console.log("Fetched Wahana Response:", response);
+
+        // Cek jika respons adalah objek dan memiliki properti 'wahana'
+        if (
+          typeof response === "object" &&
+          response !== null &&
+          Array.isArray(response.wahana)
+        ) {
+          setWahanaData(response.wahana);
+          console.log("Data successfully");
+        } else {
+          console.error(
+            "Fetched data is not an object or does not contain an array 'wahana'."
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching wahana data:", error);
+      }
+    };
+
+    fetchWahana();
+  }, []);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
@@ -53,7 +75,7 @@ function Wahana() {
     const { name, files } = e.target;
     setFormData({
       ...formData,
-      [name]: files[0],
+      [name]: Array.from(files), // Handle multiple files
     });
   };
 
@@ -61,16 +83,35 @@ function Wahana() {
     const newType = e.target.value;
     setFormData({
       ...formData,
-      type: newType,
+      tipe: newType,
     });
     setSelectedType(newType);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted: ", formData);
-    // Handle form submission logic here, e.g., send data to backend
-    handleClose();
+
+    // Create a FormData instance
+    const dataToSubmit = new FormData();
+
+    // Append form data fields
+    Object.keys(formData).forEach((key) => {
+      if (Array.isArray(formData[key])) {
+        formData[key].forEach((file) => dataToSubmit.append(key, file));
+      } else {
+        dataToSubmit.append(key, formData[key]);
+      }
+    });
+
+    try {
+      const response = await wahanaService.addWahana(dataToSubmit);
+      console.log("Wahana data successfully posted:", response);
+      handleClose(); // Close the modal
+      // Optionally, show a success message or update the data table
+    } catch (error) {
+      console.error("Error posting wahana data:", error);
+      // Optionally, show an error message to the user
+    }
   };
 
   const customStyles = {
@@ -84,17 +125,17 @@ function Wahana() {
   const columns = [
     {
       name: "Nama",
-      selector: (row) => row.nama,
+      selector: (row) => row.nama_wahana,
       sortable: true,
     },
     {
       name: "Deskripsi",
-      selector: (row) => row.deskripsi,
+      selector: (row) => row.deskripsi_wahana,
       sortable: true,
     },
     {
-      name: "Operasional",
-      selector: (row) => row.operasional,
+      name: "Tipe",
+      selector: (row) => row.tipe,
       sortable: true,
     },
     {
@@ -108,7 +149,7 @@ function Wahana() {
         <div className="flex gap-3">
           <button className="text-gray-700">
             <a
-              href={detailWahanaPath}
+              href={`/wahana/${row.uuid}`} // Adjust path as needed
               className="no-underline hover:no-underline text-inherit"
             >
               <TbListDetails className="text-2xl" />
@@ -125,87 +166,13 @@ function Wahana() {
     },
   ];
 
-  const data = [
-    {
-      id: 1,
-      nama: "Phantom 4 Pro",
-      deskripsi: "Lorem ipsum dolor sit amet",
-      operasional: "120 jam",
-      status: true,
-    },
-    {
-      id: 2,
-      nama: "Mavic Air 2",
-      deskripsi: "Consectetur adipiscing elit",
-      operasional: "80 jam",
-      status: true,
-    },
-    {
-      id: 3,
-      nama: "Spark",
-      deskripsi: "Sed do eiusmod tempor incididunt",
-      operasional: "50 jam",
-      status: false,
-    },
-    {
-      id: 4,
-      nama: "Inspire 2",
-      deskripsi: "Ut labore et dolore magna aliqua",
-      operasional: "200 jam",
-      status: true,
-    },
-    {
-      id: 5,
-      nama: "Phantom 3 Standard",
-      deskripsi: "Ut enim ad minim veniam",
-      operasional: "150 jam",
-      status: true,
-    },
-    {
-      id: 6,
-      nama: "Mavic Mini",
-      deskripsi: "Quis nostrud exercitation ullamco",
-      operasional: "30 jam",
-      status: false,
-    },
-    {
-      id: 7,
-      nama: "Phantom 4 Advanced",
-      deskripsi: "Laboris nisi ut aliquip ex ea commodo consequat",
-      operasional: "180 jam",
-      status: true,
-    },
-    {
-      id: 8,
-      nama: "Mavic 2 Pro",
-      deskripsi: "Duis aute irure dolor in reprehenderit",
-      operasional: "100 jam",
-      status: true,
-    },
-    {
-      id: 9,
-      nama: "Phantom 4",
-      deskripsi: "Excepteur sint occaecat cupidatat non proident",
-      operasional: "160 jam",
-      status: false,
-    },
-    {
-      id: 10,
-      nama: "Mavic Air",
-      deskripsi:
-        "Sunt in culpa qui officia deserunt mollit anim id est laborum",
-      operasional: "90 jam",
-      status: true,
-    },
-  ];
-
   return (
     <div className="ml-cl7">
       <h3 className="pt-10 text-3xl text-new-300">Wahana</h3>
       <DataTable
         title="Data Wahana"
         columns={columns}
-        data={data}
+        data={wahanaData}
         fixedHeader
         fixedHeaderScrollHeight="530px"
         pagination
@@ -263,25 +230,12 @@ function Wahana() {
                   />
                 </Form.Group>
 
-                <Form.Group controlId="formStatus" className="mt-3">
-                  <Form.Label>Status</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                  >
-                    <option value={true}>Aktif</option>
-                    <option value={false}>Mati</option>
-                  </Form.Control>
-                </Form.Group>
-
                 <Form.Group controlId="formType" className="mt-3">
                   <Form.Label>Tipe</Form.Label>
                   <Form.Control
                     as="select"
-                    name="type"
-                    value={formData.type}
+                    name="tipe"
+                    value={formData.tipe}
                     onChange={handleTypeChange}
                   >
                     <option value="">Pilih tipe...</option>
@@ -437,13 +391,13 @@ function Wahana() {
                   />
                 </Form.Group>
 
-                <Form.Group controlId="formCakupan" className="mt-3">
-                  <Form.Label>Cakupan (ha)</Form.Label>
+                <Form.Group controlId="formCangkupan" className="mt-3">
+                  <Form.Label>Cangkupan (ha)</Form.Label>
                   <Form.Control
                     type="number"
-                    placeholder="Masukkan cakupan"
-                    name="cakupan"
-                    value={formData.cakupan}
+                    placeholder="Masukkan cangkupan"
+                    name="cangkupan"
+                    value={formData.cangkupan}
                     onChange={handleInputChange}
                   />
                 </Form.Group>
@@ -472,134 +426,29 @@ function Wahana() {
               </Tab>
 
               <Tab eventKey="foto" title="Foto">
-                <Form.Group controlId="formFotoDepan" className="mt-3">
-                  <Form.Label>Upload Foto Depan</Form.Label>
+                <Form.Group controlId="formFoto" className="mt-3">
+                  <Form.Label>Upload Foto</Form.Label>
                   <Form.Control
                     type="file"
-                    name="fotoDepan"
+                    name="photos" // Adjusted name to match formData key
+                    multiple
                     onChange={handleFileChange}
                   />
                 </Form.Group>
 
                 <div className="mt-3">
-                  {formData.fotoDepan && (
+                  {formData.photos && formData.photos.length > 0 && (
                     <div className="mt-4">
-                      <img
-                        src={URL.createObjectURL(formData.fotoDepan)}
-                        alt="Foto Depan"
-                        className="img-fluid"
-                        style={{ maxWidth: "200px", margin: "10px" }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <Form.Group controlId="formFotoBelakang" className="mt-3">
-                  <Form.Label>Upload Foto Belakang</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="fotoBelakang"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-
-                <div className="mt-4">
-                  {formData.fotoBelakang && (
-                    <div className="mt-4">
-                      <img
-                        src={URL.createObjectURL(formData.fotoBelakang)}
-                        alt="Foto Belakang"
-                        className="img-fluid"
-                        style={{ maxWidth: "200px", margin: "10px" }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <Form.Group controlId="formFotoKanan" className="mt-3">
-                  <Form.Label>Upload Foto Kanan</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="fotoKanan"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-
-                <div className="mt-4">
-                  {formData.fotoKanan && (
-                    <div className="mt-4">
-                      <img
-                        src={URL.createObjectURL(formData.fotoKanan)}
-                        alt="Foto Kanan"
-                        className="img-fluid"
-                        style={{ maxWidth: "200px", margin: "10px" }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <Form.Group controlId="formFotoKiri" className="mt-3">
-                  <Form.Label>Upload Foto Kiri</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="fotoKiri"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-
-                <div className="mt-4">
-                  {formData.fotoKiri && (
-                    <div className="mt-4">
-                      <img
-                        src={URL.createObjectURL(formData.fotoKiri)}
-                        alt="Foto Kiri"
-                        className="img-fluid"
-                        style={{ maxWidth: "200px", margin: "10px" }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <Form.Group controlId="formFotoAtas" className="mt-3">
-                  <Form.Label>Upload Foto Atas</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="fotoAtas"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-
-                <div className="mt-4">
-                  {formData.fotoAtas && (
-                    <div className="mt-4">
-                      <img
-                        src={URL.createObjectURL(formData.fotoAtas)}
-                        alt="Foto Atas"
-                        className="img-fluid"
-                        style={{ maxWidth: "200px", margin: "10px" }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <Form.Group controlId="formFotoBawah" className="mt-3">
-                  <Form.Label>Upload Foto Bawah</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="fotoBawah"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-
-                <div className="mt-4">
-                  {formData.fotoBawah && (
-                    <div className="mt-4">
-                      <img
-                        src={URL.createObjectURL(formData.fotoBawah)}
-                        alt="Foto Bawah"
-                        className="img-fluid"
-                        style={{ maxWidth: "200px", margin: "10px" }}
-                      />
+                      {formData.photos.map((file, index) => (
+                        <div key={index} className="mt-4">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Foto ${index}`}
+                            className="img-fluid"
+                            style={{ maxWidth: "200px", margin: "10px" }}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
