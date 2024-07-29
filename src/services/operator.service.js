@@ -11,14 +11,15 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
-const getKomponen = async () => {
+// Fetch all operators
+const getOperator = async () => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/components', {
+    const response = await api.get('/users', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -26,19 +27,20 @@ const getKomponen = async () => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching komponen:', error.response ? error.response.data : error.message);
+    console.error('Error fetching operators:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const getKomponenById = async (uuid) => {
+// Fetch operator by ID
+const getOperatorById = async (uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/components/${uuid}`, {
+    const response = await api.get(`/users/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -46,41 +48,20 @@ const getKomponenById = async (uuid) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching komponen by ID:', error.response ? error.response.data : error.message);
+    console.error('Error fetching operator by ID:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const addKomponen = async (formData) => {
+// Add a new operator
+const addOperator = async (formData) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/components', formData, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-      withCredentials: true,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error adding komponen:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
-
-// New method to update komponen by ID
-const updateKomponen = async (uuid, formData) => {
-  try {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-      throw new Error('No auth token found. Please login.');
-    }
-
-    const response = await api.patch(`/components/${uuid}`, formData, {
+    const response = await api.post('/users', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -89,20 +70,42 @@ const updateKomponen = async (uuid, formData) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error updating komponen:', error.response ? error.response.data : error.message);
+    console.error('Error adding operator:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// New method to search 
-const searchKomponen = async (queryParams) => {
+// Update operator by ID
+const updateOperator = async (uuid, formData) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/components-search', {
+    const response = await api.patch(`/users/${uuid}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating operator:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// Search operators
+const searchOperator = async (queryParams) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.get('/users/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -111,19 +114,20 @@ const searchKomponen = async (queryParams) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error searching komponen:', error.response ? error.response.data : error.message);
+    console.error('Error searching operators:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const deleteKomponen = async (uuid) => {
+// Delete an operator by ID
+const deleteOperator = async (uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/components/${uuid}`, {
+    const response = await api.delete(`/users/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -131,18 +135,18 @@ const deleteKomponen = async (uuid) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error deleting komponen:', error.response ? error.response.data : error.message);
+    console.error('Error deleting operator:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const komponenService = {
-  getKomponen,
-  getKomponenById,
-  addKomponen,
-  updateKomponen,
-  searchKomponen, 
-  deleteKomponen,
+const operatorService = {
+  getOperator,
+  getOperatorById,
+  addOperator,
+  updateOperator,
+  searchOperator,  // Add searchOperators to the service
+  deleteOperator,
 };
 
-export default komponenService;
+export default operatorService;

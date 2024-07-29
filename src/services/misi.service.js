@@ -11,14 +11,15 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
-const getKomponen = async () => {
+// Fetch all missions
+const getMisi = async () => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/components', {
+    const response = await api.get('/missions', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -26,19 +27,20 @@ const getKomponen = async () => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching komponen:', error.response ? error.response.data : error.message);
+    console.error('Error fetching missions:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const getKomponenById = async (uuid) => {
+// Fetch mission by ID
+const getMisiById = async (uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/components/${uuid}`, {
+    const response = await api.get(`/missions/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -46,41 +48,20 @@ const getKomponenById = async (uuid) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching komponen by ID:', error.response ? error.response.data : error.message);
+    console.error('Error fetching mission by ID:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const addKomponen = async (formData) => {
+// Add a new mission
+const addMisi = async (formData) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/components', formData, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-      withCredentials: true,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error adding komponen:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
-
-// New method to update komponen by ID
-const updateKomponen = async (uuid, formData) => {
-  try {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-      throw new Error('No auth token found. Please login.');
-    }
-
-    const response = await api.patch(`/components/${uuid}`, formData, {
+    const response = await api.post('/missions', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -89,20 +70,42 @@ const updateKomponen = async (uuid, formData) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error updating komponen:', error.response ? error.response.data : error.message);
+    console.error('Error adding mission:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// New method to search 
-const searchKomponen = async (queryParams) => {
+// Update mission by ID
+const updateMisi = async (uuid, formData) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/components-search', {
+    const response = await api.patch(`/missions/${uuid}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating mission:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// Search missions
+const searchMisi = async (queryParams) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.get('/missions/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -111,19 +114,20 @@ const searchKomponen = async (queryParams) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error searching komponen:', error.response ? error.response.data : error.message);
+    console.error('Error searching missions:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const deleteKomponen = async (uuid) => {
+// Delete a mission by ID
+const deleteMisi = async (uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/components/${uuid}`, {
+    const response = await api.delete(`/missions/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -131,18 +135,18 @@ const deleteKomponen = async (uuid) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error deleting komponen:', error.response ? error.response.data : error.message);
+    console.error('Error deleting mission:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-const komponenService = {
-  getKomponen,
-  getKomponenById,
-  addKomponen,
-  updateKomponen,
-  searchKomponen, 
-  deleteKomponen,
+const misiService = {
+  getMisi,
+  getMisiById,
+  addMisi,
+  updateMisi,
+  searchMisi,  // Add searchMisi to the service
+  deleteMisi,
 };
 
-export default komponenService;
+export default misiService;
