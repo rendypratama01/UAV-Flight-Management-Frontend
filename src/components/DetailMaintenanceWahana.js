@@ -3,7 +3,7 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import image from "../assets/img/image.png";
 
-const DetailMaintenance = () => {
+const DetailMaintenanceWahana = () => {
   // Sample data for maintenance details (replace with actual data or props)
   const maintenanceDetails = {
     teknisi: "Jane Smith",
@@ -17,7 +17,7 @@ const DetailMaintenance = () => {
 
   return (
     <div className="absolute ml-cl7 mr-cr1 mt-ct1">
-      <h3 className="text-3xl text-new-300">Perbaikan</h3>
+      <h3 className="text-3xl text-new-300">Perbaikan Wahana</h3>
       <p className="text-justify">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -94,4 +94,4 @@ const DetailMaintenance = () => {
   );
 };
 
-export default DetailMaintenance;
+export default DetailMaintenanceWahana;

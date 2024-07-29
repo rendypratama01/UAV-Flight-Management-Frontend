@@ -6,11 +6,11 @@ import { TbListDetails } from "react-icons/tb";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { detailMaintenancePath } from "../routes";
+import { detailMaintenanceWahanaPath } from "../routes";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
-function Maintenance() {
+function MaintenanceWahana() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     judul: "",
@@ -87,7 +87,7 @@ function Maintenance() {
         <div className="flex gap-3">
           <button className="text-gray-700">
             <a
-              href={detailMaintenancePath}
+              href={detailMaintenanceWahanaPath}
               className="no-underline hover:no-underline text-inherit"
             >
               <TbListDetails className="text-2xl" />
@@ -215,9 +215,9 @@ function Maintenance() {
 
   return (
     <div className="ml-cl7">
-      <h3 className="pt-10 text-3xl text-new-300">Perbaikan</h3>
+      <h3 className="pt-10 text-3xl text-new-300">Perbaikan Wahana</h3>
       <DataTable
-        title="Data Perbaikan"
+        title="Data Perbaikan Wahana"
         columns={columns}
         data={data}
         fixedHeader
@@ -238,7 +238,7 @@ function Maintenance() {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Tambah Perbaikan</Modal.Title>
+          <Modal.Title>Tambah Perbaikan Wahana</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
@@ -349,5 +349,5 @@ function Maintenance() {
   );
 }
 
-export default Maintenance;
+export default MaintenanceWahana;
 
