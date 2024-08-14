@@ -38,12 +38,12 @@ function App() {
           <Route path={maintenanceWahanaPath} element={<ProtectedRoute element={MaintenanceWahanaPage} />} />
           <Route path={maintenanceKomponenPath} element={<ProtectedRoute element={MaintenanceKomponenPage} />} />
           <Route path={komponenPath} element={<ProtectedRoute element={KomponenPage} />} />
-          <Route path={detailMisiPath} element={<ProtectedRoute element={DetailMisiPage} />} />
+          <Route path={`${detailMisiPath}/:uuid`} element={<ProtectedRoute element={DetailMisiPage} />} />
           <Route path={`${detailOperatorPath}/:uuid`} element={<ProtectedRoute element={DetailOperatorPage} />} />
           <Route path={`${detailWahanaPath}/:uuid`} element={<ProtectedRoute element={DetailWahanaPage} />} />
-          <Route path={detailMaintenanceWahanaPath} element={<ProtectedRoute element={DetailMaintenanceWahanaPage} />} />
-          <Route path={detailMaintenanceKomponenPath} element={<ProtectedRoute element={DetailMaintenanceKomponenPage} />} />
-          <Route path={detailKomponenPath} element={<ProtectedRoute element={DetailKomponenPage} />} />
+          <Route path={`${detailMaintenanceWahanaPath}/:uuid`} element={<ProtectedRoute element={DetailMaintenanceWahanaPage} />} />
+          <Route path={`${detailMaintenanceKomponenPath}/:uuid`} element={<ProtectedRoute element={DetailMaintenanceKomponenPage} />} />
+          <Route path={`${detailKomponenPath}/:uuid`} element={<ProtectedRoute element={DetailKomponenPage} />} />
         </Routes>
       </main>
     </div>

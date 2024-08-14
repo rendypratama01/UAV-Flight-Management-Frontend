@@ -13,6 +13,7 @@ module.exports = withMT({
       cl7: "350px",
       cl8: "400px",
 
+      cr0: "25px",
       cr1: '50px',
       cr2: "100px",
       cr3: "150px",
