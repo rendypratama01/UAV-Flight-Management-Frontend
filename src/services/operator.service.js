@@ -105,7 +105,7 @@ const searchOperator = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/users/search', {
+    const response = await api.get('/search-users', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -140,13 +140,35 @@ const deleteOperator = async (uuid) => {
   }
 };
 
+const getOperatorPilotAndGCS = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.get('/users-pilot-gcs', {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching operator pilot and GCS:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// Add the new function to the operatorService object
 const operatorService = {
   getOperator,
   getOperatorById,
   addOperator,
   updateOperator,
-  searchOperator,  // Add searchOperators to the service
+  searchOperator,  
   deleteOperator,
+  getOperatorPilotAndGCS, // Add the new function here
 };
 
 export default operatorService;

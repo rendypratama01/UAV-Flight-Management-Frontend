@@ -102,7 +102,7 @@ const searchKomponen = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/components-search', {
+    const response = await api.get('/search-components', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,

@@ -105,7 +105,7 @@ const searchMisi = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/missions/search', {
+    const response = await api.get('/search-mission', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -140,13 +140,120 @@ const deleteMisi = async (uuid) => {
   }
 };
 
+const getDokumentasi = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.get('/dokumentasi', {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dokumentasi:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+const addDokumentasi = async (formData) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.post('/dokumentasi', formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error adding dokumentasi:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+const downloadDokumentasi = async (uuid) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.get(`/dokumentasi-download/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error download dokumentasi:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+const deleteDokumentasi = async (uuid) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.delete(`/dokumentasi/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting dokumentasi:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+const updateMissionStatus = async (uuid, status) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.patch(`/mission-confirm/${uuid}`, status, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating mission status:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
 const misiService = {
   getMisi,
   getMisiById,
   addMisi,
   updateMisi,
-  searchMisi,  // Add searchMisi to the service
+  searchMisi,
   deleteMisi,
+  getDokumentasi,  
+  addDokumentasi, 
+  downloadDokumentasi, 
+  deleteDokumentasi, 
+  updateMissionStatus,
 };
 
 export default misiService;
