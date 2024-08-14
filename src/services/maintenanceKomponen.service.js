@@ -11,15 +11,15 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
-// Fetch all repairs
-const getPerbaikan = async () => {
+// Fetch all component repairs
+const getPerbaikanKomponen = async () => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/perbaikan', {
+    const response = await api.get('/perbaikan-komponen', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -27,20 +27,20 @@ const getPerbaikan = async () => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching repairs:', error.response ? error.response.data : error.message);
+    console.error('Error fetching component repairs:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// Fetch repair by ID
-const getPerbaikanById = async (uuid) => {
+// Fetch component repair by ID
+const getPerbaikanKomponenById = async (uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/perbaikan/${uuid}`, {
+    const response = await api.get(`/perbaikan-komponen/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -48,42 +48,20 @@ const getPerbaikanById = async (uuid) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching repair by ID:', error.response ? error.response.data : error.message);
+    console.error('Error fetching component repair by ID:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// Add a new repair
-const addPerbaikan = async (formData) => {
+// Add a new component repair
+const addPerbaikanKomponen = async (formData) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/perbaikan', formData, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-      withCredentials: true,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error adding repair:', error.response ? error.response.data : error.message);
-    throw error;
-  }
-};
-
-// Update repair by ID
-const updatePerbaikan = async (uuid, formData) => {
-  try {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-      throw new Error('No auth token found. Please login.');
-    }
-
-    const response = await api.patch(`/perbaikan/${uuid}`, formData, {
+    const response = await api.post('/perbaikan-komponen', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -92,20 +70,42 @@ const updatePerbaikan = async (uuid, formData) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error updating repair:', error.response ? error.response.data : error.message);
+    console.error('Error adding component repair:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// Search repairs
-const searchPerbaikan = async (queryParams) => {
+// Update component repair by ID
+const updatePerbaikanKomponen = async (uuid, formData) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/perbaikan/search', {
+    const response = await api.patch(`/perbaikan-komponen/${uuid}`, formData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating component repair:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// Search component repairs
+const searchPerbaikanKomponen = async (queryParams) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      throw new Error('No auth token found. Please login.');
+    }
+
+    const response = await api.get('/search-perbaikanKomponen', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -114,20 +114,20 @@ const searchPerbaikan = async (queryParams) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error searching repairs:', error.response ? error.response.data : error.message);
+    console.error('Error searching component repairs:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// Delete a repair by ID
-const deletePerbaikan = async (uuid) => {
+// Delete a component repair by ID
+const deletePerbaikanKomponen = async (uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/perbaikan/${uuid}`, {
+    const response = await api.delete(`/perbaikan-komponen/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -135,18 +135,18 @@ const deletePerbaikan = async (uuid) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error deleting repair:', error.response ? error.response.data : error.message);
+    console.error('Error deleting component repair:', error.response ? error.response.data : error);
     throw error;
   }
 };
 
-const perbaikanService = {
-  getPerbaikan,
-  getPerbaikanById,
-  addPerbaikan,
-  updatePerbaikan,
-  searchPerbaikan,  // Add searchPerbaikan to the service
-  deletePerbaikan,
+const perbaikanKomponenService = {
+  getPerbaikanKomponen,
+  getPerbaikanKomponenById,
+  addPerbaikanKomponen,
+  updatePerbaikanKomponen,
+  searchPerbaikanKomponen,
+  deletePerbaikanKomponen,
 };
 
-export default perbaikanService;
+export default perbaikanKomponenService;
