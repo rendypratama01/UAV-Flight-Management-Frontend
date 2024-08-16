@@ -1,20 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import image from '../assets/img/image.png';
+// import image from '../assets/img/image.png';
+import { useParams } from "react-router-dom";
+import operatorService from "../services/operator.service";
 
 const DetailOperator = () => {
   // Sample data for operator details (replace with actual data or props)
-  const operatorDetails = {
-    nama: 'John Doe',
-    role: 'Admin',
-    tanggalLahir: '1990-01-01',
-    nik: '187844346719909912',
-    email: 'john.doe@example.com',
-    telpon: '081234567890'
-  };
+  const { uuid } = useParams(); // Get the uuid from URL parameters
+  const [operatorDetails, setOperatorDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample mission data
+  useEffect(() => {
+    const fetchOperatorDetails = async () => {
+      try {
+        const data = await operatorService.getOperatorById(uuid);
+        console.log(data); // Logging data for debugging
+        setOperatorDetails(data.user);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOperatorDetails();
+  }, [uuid]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!operatorDetails) return <p>No wahana details available.</p>;
+
   const missions = [
     { id: 1, judul: 'Pemetaan Krakatau', kategori: 'Pemetaan', tanggal: '15 Agustus 2023' },
     { id: 2, judul: 'Monitoring Gunung Bromo', kategori: 'Monitoring', tanggal: '26 Agustus 2023' },
@@ -25,19 +42,10 @@ const DetailOperator = () => {
   ];
 
   return (
-    <div className="absolute ml-cl7 mr-cr1 mt-ct1">
-      <h3 className="text-3xl text-new-300">Operator</h3>
-      <p className="text-justify">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </p>
+    <div className="ml-cl7 mr-cr1">
+      <h3 className="text-3xl text-new-300 pt-10">{operatorDetails.name}</h3>
       <div className="flex justify-center items-center mt-ct1 mb-cb1"> 
-        <img src={image} alt="Logo Detail Operator" width="400px" />
+        <img src={operatorDetails.photo_profile} alt="Logo Detail Operator" width="400px" />
       </div>
       <div className="detail-operator-container-subtitle">
         <Tabs defaultActiveKey="detail" id="tab" className="mb-3">
@@ -46,7 +54,7 @@ const DetailOperator = () => {
               <div className="flex mb-2">
                 <span className="font-bold w-36">Nama</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{operatorDetails.nama}</span>
+                <span className="flex-1 text-left">{operatorDetails.name}</span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Role</span>
@@ -56,7 +64,7 @@ const DetailOperator = () => {
               <div className="flex mb-2">
                 <span className="font-bold w-36">Tanggal Lahir</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{operatorDetails.tanggalLahir}</span>
+                <span className="flex-1 text-left">{operatorDetails.tanggal_lahir}</span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">NIK</span>
@@ -71,7 +79,7 @@ const DetailOperator = () => {
               <div className="flex mb-2">
                 <span className="font-bold w-36">No. Telp</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{operatorDetails.telpon}</span>
+                <span className="flex-1 text-left">{operatorDetails.nomor_telepon}</span>
               </div>
             </div>
           </Tab>
