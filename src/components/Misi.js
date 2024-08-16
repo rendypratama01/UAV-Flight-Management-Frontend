@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -10,25 +10,280 @@ import { detailMisiPath } from "../routes";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Select from "react-select";
+import wahanaService from "../services/wahana.service";
+import misiService from "../services/misi.service";
+import ReactDOM from "react-dom";
+import komponenService from "../services/komponen.service";
+import operatorService from "../services/operator.service";
 
 const Misi = () => {
   const [showModal, setShowModal] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [formData, setFormData] = useState({
-    judul: "",
-    deskripsi: "",
+    judul_misi: "",
+    deskripsi_misi: "",
     kategori: "",
-    tanggalMisi: "",
-    pilots: [],
-    gcs: [],
     telemetry: "",
-    remoteControl: "",
-    videoSender: "",
-    wahana: [],
-    komponen: [],
+    remote: "",
+    video_sender: "",
+    wahanaUuids: [],
+    komponenUuids: [],
+    userUuids: [],
   });
 
-  const handleClose = () => setShowModal(false);
+  const [misiData, setMisiData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [misiId, setMisiId] = useState(null);
+  const [showSuccessAdd, setShowSuccessAdd] = useState(false);
+  const [showSuccessUpdate, setShowSuccessUpdate] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showSuccessDelete, setShowSuccessDelete] = useState(false);
+  const [deleteMisiId, setDeleteMisiId] = useState(null);
+  const [wahanaOptions, setWahanaOptions] = useState([]);
+  const [komponenOptions, setKomponenOptions] = useState([]);
+  const [userOptions, setUserOptions] = useState([]);
+
   const handleShow = () => setShowModal(true);
+  const handleClose = () => {
+    setShowModal(false);
+    setIsUpdate(false);
+    setMisiId(null);
+    setFormData({
+      judul_misi: "",
+      deskripsi_misi: "",
+      kategori: "",
+      telemetry: "",
+      remote: "",
+      video_sender: "",
+      wahanaUuids: [],
+      komponenUuids: [],
+      userUuids: [],
+    });
+  };
+
+  useEffect(() => {
+    const fetchWahanaData = async () => {
+      try {
+        const response = await wahanaService.getWahana();
+        if (response && Array.isArray(response.wahana)) {
+          const options = response.wahana.map((wahana) => ({
+            value: wahana.uuid,
+            label: (
+              <div>
+                <div>{wahana.nama_wahana}</div>
+                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>{wahana.tipe}</div>
+              </div>
+            ),
+            nama_wahana: wahana.nama_wahana.toLowerCase(),
+            tipe: wahana.tipe.toLowerCase()
+          }));
+          setWahanaOptions(options);
+        }
+      } catch (error) {
+        console.error("Error fetching wahana data:", error);
+      }
+    };
+
+    fetchWahanaData();
+  }, []);
+
+  const customFilterOptionWahana = (option, searchText) => {
+    const searchTerm = searchText.toLowerCase();
+    return (
+      option.data.nama_wahana.includes(searchTerm) || option.data.tipe.includes(searchTerm)
+    );
+  };
+
+  const handleWahanaSelectChange = (selectedOptions, name) => {
+    const selectedValues = selectedOptions
+      ? selectedOptions.map((option) => option.value)
+      : []; // Ambil nilai dari objek yang dipilih
+    setFormData({
+      ...formData,
+      wahanaUuids: selectedValues, // Simpan ID wahana yang dipilih
+    });
+  };
+
+  useEffect(() => {
+    const fetchKomponenData = async () => {
+      try {
+        const response = await komponenService.getKomponen();
+        if (response && Array.isArray(response.komponen)) {
+          const options = response.komponen.map((komponen) => ({
+            value: komponen.uuid,
+            label: (
+              <div>
+                <div>{komponen.nama_komponen}</div>
+                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>{komponen.kategori}</div>
+              </div>
+            ),
+            nama_komponen: komponen.nama_komponen.toLowerCase(),
+            kategori: komponen.kategori.toLowerCase()
+          }));
+          setKomponenOptions(options);
+        }
+      } catch (error) {
+        console.error("Error fetching komponen data:", error);
+      }
+    };
+
+    fetchKomponenData();
+  }, []);
+
+  const customFilterOptionKomponen = (option, searchText) => {
+    const searchTerm = searchText.toLowerCase();
+    return (
+      option.data.nama_komponen.includes(searchTerm) || option.data.kategori.includes(searchTerm)
+    );
+  };
+
+  const handleKomponenSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions
+      ? selectedOptions.map((option) => option.value)
+      : [];
+    setFormData({
+      ...formData,
+      komponenUuids: selectedValues,
+    });
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await operatorService.getOperatorPilotAndGCS();
+        if (response && Array.isArray(response.users)) {
+          const options = response.users.map((user) => ({
+            value: user.uuid,
+            label: (
+              <div>
+                <div>{user.name}</div>
+                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>{user.role}</div>
+              </div>
+            ),
+            name: user.name.toLowerCase(),
+            role: user.role.toLowerCase()
+          }));
+          setUserOptions(options);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const customFilterOptionUser = (option, searchText) => {
+    const searchTerm = searchText.toLowerCase();
+    return (
+      option.data.name.includes(searchTerm) || option.data.role.includes(searchTerm)
+    );
+  };
+
+  const handleUserSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions
+      ? selectedOptions.map((option) => option.value)
+      : [];
+    setFormData({
+      ...formData,
+      userUuids: selectedValues,
+    });
+  };
+
+  useEffect(() => {
+    const fetchMisi = async () => {
+      try {
+        const response = await misiService.getMisi();
+        console.log(response?.msg, response);
+
+        if (
+          typeof response === "object" &&
+          response !== null &&
+          Array.isArray(response.missions)
+        ) {
+          setMisiData(response.missions);
+          console.log("Data successfully");
+        } else {
+          console.error(
+            "Fetched data is not an object or does not contain an array 'Misi'."
+          );
+        }
+      } catch (error) {
+        console.error(error.msg, error);
+      }
+    };
+
+    fetchMisi();
+  }, []);
+
+  useEffect(() => {
+    const searchMisiData = async () => {
+      try {
+        if (searchQuery) {
+          const response = await misiService.searchMisi({
+            query: searchQuery,
+          });
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            Array.isArray(response.missions)
+          ) {
+            setMisiData(response.missions);
+          } else {
+            console.error("Invalid search response format");
+          }
+        } else {
+          const response = await misiService.getMisi();
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            Array.isArray(response.missions)
+          ) {
+            setMisiData(response.missions);
+          } else {
+            console.error("Invalid response format");
+          }
+        }
+      } catch (error) {
+        console.error(error.msg, error);
+      }
+    };
+
+    searchMisiData();
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (misiId) {
+      const fetchMisiById = async () => {
+        try {
+          const response = await misiService.getMisiById(misiId);
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            response.mission
+          ) {
+            setFormData({
+              judul_misi: response.mission.judul_misi,
+              deskripsi_misi: response.mission.deskripsi_misi,
+              kategori: response.mission.kategori,
+              telemetry: response.mission.telemetry,
+              remote: response.mission.remote,
+              video_sender: response.mission.video_sender,
+            });
+            handleShow();
+          } else {
+            console.error(
+              "Fetched data is not an object or does not contain 'Perbaikan wahana'."
+            );
+          }
+        } catch (error) {
+          console.error(error.msg, error);
+        }
+      };
+
+      fetchMisiById();
+    }
+  }, [misiId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,17 +293,87 @@ const Misi = () => {
     });
   };
 
-  const handleSelectChange = (selectedOptions, name) => {
-    setFormData({
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    const creatorUuid = localStorage.getItem("userUUID");
+  if (!creatorUuid) {
+    console.error("creatorUuid tidak ditemukan di localStorage");
+    return;
+  }
+  
+    // Buat objek data yang akan dikirim
+    const dataToSubmit = {
       ...formData,
-      [name]: selectedOptions ? selectedOptions.map(option => option.value) : [],
-    });
+      creatorUuid,
+    };
+  
+    try {
+      if (isUpdate) {
+        const response = await misiService.updateMisi(misiId, dataToSubmit);
+        console.log(response.msg, response);
+        setShowSuccessUpdate(true);
+      } else {
+        const response = await misiService.addMisi(dataToSubmit);
+        console.log(response.msg, response);
+        setShowSuccessAdd(true);
+      }
+  
+      const updatedResponse = await misiService.getMisi();
+      if (
+        typeof updatedResponse === "object" &&
+        updatedResponse !== null &&
+        Array.isArray(updatedResponse.missions)
+      ) {
+        setMisiData(updatedResponse.missions);
+      } else {
+        console.error("Invalid response format");
+      }
+  
+      handleClose();
+    } catch (error) {
+      console.error(
+        isUpdate
+          ? "Error updating perbaikan wahana data:"
+          : "Error posting perbaikan wahana data:",
+        error.msg
+      );
+    }
+  };
+  
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await misiService.deleteMisi(deleteMisiId);
+      setShowSuccessDelete(true);
+
+      const updatedResponse = await misiService.getMisi();
+      if (
+        typeof updatedResponse === "object" &&
+        updatedResponse !== null &&
+        Array.isArray(updatedResponse.missions)
+      ) {
+        setMisiData(updatedResponse.missions);
+      } else {
+        console.error(
+          "Fetched data is not an object or does not contain an array 'Perbaikan Wahana'."
+        );
+      }
+
+      setShowConfirmDelete(false);
+    } catch (error) {
+      console.error("Error deleting komponen:", error);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form Data Submitted: ", formData);
-    handleClose();
+  const handleEdit = (mission) => {
+    setIsUpdate(true);
+    setMisiId(mission.uuid);
+  };
+
+  const handleDelete = (uuid) => {
+    setDeleteMisiId(uuid);
+    setShowConfirmDelete(true);
   };
 
   const customStyles = {
@@ -62,12 +387,7 @@ const Misi = () => {
   const columns = [
     {
       name: "Judul",
-      selector: (row) => row.judul,
-      sortable: true,
-    },
-    {
-      name: "Deskripsi",
-      selector: (row) => row.deskripsi,
+      selector: (row) => row.judul_misi,
       sortable: true,
     },
     {
@@ -77,7 +397,7 @@ const Misi = () => {
     },
     {
       name: "Tanggal Misi",
-      selector: (row) => row.tanggal,
+      selector: (row) => row.createdAt,
       sortable: true,
     },
     {
@@ -86,16 +406,19 @@ const Misi = () => {
         <div className="flex gap-3">
           <button className="text-gray-700">
             <a
-              href={detailMisiPath}
+              href={`${detailMisiPath}/${row.uuid}`}
               className="no-underline hover:no-underline text-inherit"
             >
               <TbListDetails className="text-2xl" />
             </a>
           </button>
-          <button className="text-blue-900">
+          <button className="text-blue-900" onClick={() => handleEdit(row)}>
             <FaEdit className="text-2xl" />
           </button>
-          <button className="text-red-600">
+          <button
+            className="text-red-600"
+            onClick={() => handleDelete(row.uuid)}
+          >
             <MdDelete className="text-2xl" />
           </button>
         </div>
@@ -103,180 +426,27 @@ const Misi = () => {
     },
   ];
 
-  const data = [
-    {
-      id: 1,
-      judul: "Pemetaan Krakatau",
-      deskripsi: "Lorem ipsum dolor sit amet",
-      kategori: "Pemetaan",
-      tanggal: "15 Agustus 2023",
-    },
-    {
-      id: 2,
-      judul: "Monitoring Gunung Bromo",
-      deskripsi: "Consectetur adipiscing elit",
-      kategori: "Monitoring",
-      tanggal: "26 Agustus 2023",
-    },
-    {
-      id: 3,
-      judul: "Kompetisi Fotografi Semeru",
-      deskripsi: "Sed do eiusmod tempor incididunt",
-      kategori: "Kompetisi",
-      tanggal: "13 September 2023",
-    },
-    {
-      id: 4,
-      judul: "Pengiriman Logistik Merapi",
-      deskripsi: "Ut labore et dolore magna aliqua",
-      kategori: "Pengiriman",
-      tanggal: "19 Oktober 2023",
-    },
-    {
-      id: 5,
-      judul: "Pemetaan Rinjani",
-      deskripsi: "Ut enim ad minim veniam",
-      kategori: "Pemetaan",
-      tanggal: "14 November 2023",
-    },
-    {
-      id: 6,
-      judul: "Monitoring Gunung Agung",
-      deskripsi: "Quis nostrud exercitation ullamco",
-      kategori: "Monitoring",
-      tanggal: "15 Desember 2023",
-    },
-    {
-      id: 7,
-      judul: "Kompetisi Mendaki Kerinci",
-      deskripsi: "Laboris nisi ut aliquip ex ea commodo",
-      kategori: "Kompetisi",
-      tanggal: "28 Desember 2023",
-    },
-    {
-      id: 8,
-      judul: "Pengiriman Bantuan Slamet",
-      deskripsi: "Duis aute irure dolor in reprehenderit",
-      kategori: "Pengiriman",
-      tanggal: "17 Januari 2024",
-    },
-    {
-      id: 9,
-      judul: "Pemetaan Tambora",
-      deskripsi: "In voluptate velit esse cillum dolore",
-      kategori: "Pemetaan",
-      tanggal: "18 Februari 2024",
-    },
-    {
-      id: 10,
-      judul: "Monitoring Gunung Lawu",
-      deskripsi: "Eu fugiat nulla pariatur",
-      kategori: "Monitoring",
-      tanggal: "9 Maret 2024",
-    },
-    {
-      id: 11,
-      judul: "Kompetisi Mendaki Gede",
-      deskripsi: "Excepteur sint occaecat cupidatat non proident",
-      kategori: "Kompetisi",
-      tanggal: "20 Maret 2024",
-    },
-    {
-      id: 12,
-      judul: "Pengiriman Barang Gunung Merbabu",
-      deskripsi: "Sunt in culpa qui officia deserunt mollit anim",
-      kategori: "Pengiriman",
-      tanggal: "1 April 2024",
-    },
-    {
-      id: 13,
-      judul: "Pemetaan Gunung Ijen",
-      deskripsi: "Laboris nisi ut aliquip ex ea commodo",
-      kategori: "Pemetaan",
-      tanggal: "14 April 2024",
-    },
-    {
-      id: 14,
-      judul: "Monitoring Gunung Raung",
-      deskripsi: "Duis aute irure dolor in reprehenderit",
-      kategori: "Monitoring",
-      tanggal: "23 April 2024",
-    },
-    {
-      id: 15,
-      judul: "Kompetisi Jelajah Gunung Sindoro",
-      deskripsi: "Ut enim ad minim veniam",
-      kategori: "Kompetisi",
-      tanggal: "24 Mei 2024",
-    },
-    {
-      id: 16,
-      judul: "Pengiriman Bantuan Gunung Welirang",
-      deskripsi: "Excepteur sint occaecat cupidatat non proident",
-      kategori: "Pengiriman",
-      tanggal: "2 Juni 2024",
-    },
-    {
-      id: 17,
-      judul: "Pemetaan Gunung Papandayan",
-      deskripsi: "Sunt in culpa qui officia deserunt mollit anim",
-      kategori: "Pemetaan",
-      tanggal: "10 Juni 2024",
-    },
-    {
-      id: 18,
-      judul: "Monitoring Gunung Ciremai",
-      deskripsi: "Lorem ipsum dolor sit amet",
-      kategori: "Monitoring",
-      tanggal: "18 Juni 2024",
-    },
-    {
-      id: 19,
-      judul: "Kompetisi Fotografi Gunung Salak",
-      deskripsi: "Consectetur adipiscing elit",
-      kategori: "Kompetisi",
-      tanggal: "28 Juni 2024",
-    },
-    {
-      id: 20,
-      judul: "Pengiriman Barang Gunung Sumbing",
-      deskripsi: "Sed do eiusmod tempor incididunt",
-      kategori: "Pengiriman",
-      tanggal: "9 Juli 2024",
-    },
-  ];
-
-  const pilotOptions = [
-    { value: "pilot1", label: "Pilot 1" },
-    { value: "pilot2", label: "Pilot 2" },
-    { value: "pilot3", label: "Pilot 3" },
-  ];
-
-  const gcsOptions = [
-    { value: "gcs", label: "GCS 1" },
-    { value: "gcs2", label: "GCS 2" },
-    { value: "gcs3", label: "GCS 3" },
-  ];
-
-  const wahanaOptions = [
-    { value: "wahana1", label: "Wahana 1" },
-    { value: "wahana2", label: "Wahana 2" },
-    { value: "wahana3", label: "Wahana 3" },
-  ];
-
-  const komponenOptions = [
-    { value: "komponen1", label: "Komponen 1" },
-    { value: "komponen2", label: "Komponen 2" },
-    { value: "komponen3", label: "Komponen 3" },
-  ];
-
   return (
     <div className="ml-cl7">
       <h3 className="pt-10 text-3xl text-new-300">Misi</h3>
+
+      {/* Search Bar */}
+      <div className="mb-4 pt-5">
+        <Form inline>
+          <Form.Control
+            type="text"
+            placeholder="Cari nama, status, atau tipe..."
+            className="mr-2"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </Form>
+      </div>
+
       <DataTable
         title="Data Misi"
         columns={columns}
-        data={data}
+        data={misiData}
         fixedHeader
         fixedHeaderScrollHeight="530px"
         pagination
@@ -306,8 +476,8 @@ const Misi = () => {
                   <Form.Control
                     type="text"
                     placeholder="Masukkan judul"
-                    name="judul"
-                    value={formData.judul}
+                    name="judul_misi"
+                    value={formData.judul_misi}
                     onChange={handleInputChange}
                   />
                 </Form.Group>
@@ -317,8 +487,8 @@ const Misi = () => {
                   <Form.Control
                     as="textarea"
                     placeholder="Masukkan deskripsi"
-                    name="deskripsi"
-                    value={formData.deskripsi}
+                    name="deskripsi_misi"
+                    value={formData.deskripsi_misi}
                     onChange={handleInputChange}
                   />
                 </Form.Group>
@@ -332,51 +502,48 @@ const Misi = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Pilih kategori...</option>
-                    <option value="pemetaan">Pemetaan</option>
-                    <option value="monitoring">Monitoring</option>
-                    <option value="pengiriman">Pengiriman</option>
-                    <option value="kompetisi">Kompetisi</option>
+                    <option value="Pemetaan">Pemetaan</option>
+                    <option value="Pemantauan">Pemantauan</option>
+                    <option value="Pengiriman">Pengiriman</option>
+                    <option value="Kompetisi">Kompetisi</option>
                   </Form.Control>
                 </Form.Group>
-
-                <Form.Group controlId="formTanggalMisi">
-                  <Form.Label>Tanggal Misi</Form.Label>
-                  <Form.Control
-                    type="date"
-                    name="tanggalMisi"
-                    value={formData.tanggalMisi}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
               </Tab>
 
-              <Tab eventKey="pilots" title="Pilot">
-                <Form.Group controlId="formPilots">
-                  <Form.Label>Pilot</Form.Label>
+              <Tab eventKey="operator" title="Operator">
+                <Form.Group controlId="formOperator">
+                  <Form.Label>Pilih Operator</Form.Label>
                   <Select
                     isMulti
-                    name="pilots"
-                    options={pilotOptions}
+                    name="userUuids"
+                    options={userOptions}
                     className="basic-multi-select"
                     classNamePrefix="select"
-                    onChange={(selectedOptions) => handleSelectChange(selectedOptions, "pilots")}
+                    onChange={handleUserSelectChange}
+                    filterOption={customFilterOptionUser}
                   />
                 </Form.Group>
               </Tab>
 
-              <Tab eventKey="gcs" title="GCS">
-                <Form.Group controlId="formPilots">
+              {/* <Tab eventKey="gcs" title="GCS">
+              <Form.Group controlId="formWahana">
                   <Form.Label>GCS Operator</Form.Label>
                   <Select
-                    isMulti
-                    name="gcs"
-                    options={gcsOptions}
-                    className="basic-multi-select"
+                    isMulti={false} // Ubah menjadi false agar hanya bisa memilih satu wahana
+                    placeholder="Pilih GCS Operator"
+                    name="userUuids"
+                    options={userOptions}
+                    className="basic-single-select" // Ubah className jika perlu
                     classNamePrefix="select"
-                    onChange={(selectedOptions) => handleSelectChange(selectedOptions, "gcs")}
+                    onChange={(selectedOption) =>
+                      handleUserSelectChange(selectedOption, "user")
+                    }
+                    value={userOptions.find(
+                      (option) => option.value === formData.userUuids
+                    )} // Menampilkan wahana yang dipilih
                   />
                 </Form.Group>
-              </Tab>
+              </Tab> */}
 
               <Tab eventKey="radio" title="Radio">
                 <Form.Group controlId="formTelemetry">
@@ -397,8 +564,8 @@ const Misi = () => {
                   <Form.Label>Remote Control</Form.Label>
                   <Form.Control
                     as="select"
-                    name="remoteControl"
-                    value={formData.remoteControl}
+                    name="remote"
+                    value={formData.remote}
                     onChange={handleInputChange}
                   >
                     <option value="">Pilih remote control...</option>
@@ -411,8 +578,8 @@ const Misi = () => {
                   <Form.Label>Video Sender</Form.Label>
                   <Form.Control
                     as="select"
-                    name="videoSender"
-                    value={formData.videoSender}
+                    name="video_sender"
+                    value={formData.video_sender}
                     onChange={handleInputChange}
                   >
                     <option value="">Pilih video sender...</option>
@@ -423,45 +590,138 @@ const Misi = () => {
               </Tab>
 
               <Tab eventKey="wahana" title="Wahana">
-                   <Form.Group controlId="formWahana">
-                     <Form.Label>Wahana</Form.Label>
-                     <Select
-                       isMulti
-                       name="wahana"
-                       options={wahanaOptions}
-                       className="basic-multi-select"
-                       classNamePrefix="select"
-                       onChange={(selectedOptions) => handleSelectChange(selectedOptions, "wahana")}
-                     />
-                   </Form.Group>
-                 </Tab>
+                <Form.Group controlId="formWahana">
+                  <Form.Label>Pilih Wahana</Form.Label>
+                  <Select
+                    isMulti
+                    name="wahanaUuids"
+                    options={wahanaOptions}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={handleWahanaSelectChange}
+                    filterOption={customFilterOptionWahana}
+                  />
+                </Form.Group>
+              </Tab>
 
-                 <Tab eventKey="komponen" title="Komponen">
-                   <Form.Group controlId="formKomponen">
-                     <Form.Label>Komponen</Form.Label>
-                     <Select
-                       isMulti
-                       name="komponen"
-                       options={komponenOptions}
-                       className="basic-multi-select"
-                       classNamePrefix="select"
-                       onChange={(selectedOptions) => handleSelectChange(selectedOptions, "komponen")}
-                     />
-                   </Form.Group>
-                 </Tab>
-               </Tabs>
+              <Tab eventKey="komponen" title="Komponen">
+                <Form.Group controlId="formKomponen">
+                  <Form.Label>Pilih Komponen</Form.Label>
+                  <Select
+                    isMulti
+                    name="komponenUuids"
+                    options={komponenOptions}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={handleKomponenSelectChange}
+                    filterOption={customFilterOptionKomponen}
+                  />
+                </Form.Group>
+              </Tab>
+            </Tabs>
 
-               <div className="text-center mt-4">
-                 <Button variant="primary" type="submit">
-                   Submit
-                 </Button>
-               </div>
-             </Form>
-           </Modal.Body>
-         </Modal>
-       </div>
-     );
-   };
+            <div className="text-center mt-4">
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
 
-   export default Misi;
+      {ReactDOM.createPortal(
+        showConfirmDelete && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h2>
+              <p className="mb-4">
+                Apakah Anda yakin ingin menghapus data Misi ini?
+              </p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  onClick={() => setShowConfirmDelete(false)}
+                >
+                  Batal
+                </button>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={handleDeleteConfirm}
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
 
+      {ReactDOM.createPortal(
+        showSuccessDelete && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
+              <p className="mb-4">Misi telah berhasil dihapus.</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setShowSuccessDelete(false)}
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
+
+      {ReactDOM.createPortal(
+        showSuccessAdd && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">
+                Berhasil Tambah Data
+              </h2>
+              <p className="mb-4">Data Misi telah berhasil ditambahkan.</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setShowSuccessAdd(false)}
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
+
+      {ReactDOM.createPortal(
+        showSuccessUpdate && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">
+                Berhasil Update Data
+              </h2>
+              <p className="mb-4">Data Misi telah berhasil diperbarui.</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setShowSuccessUpdate(false)}
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
+    </div>
+  );
+};
+
+export default Misi;

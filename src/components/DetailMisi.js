@@ -1,704 +1,456 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { Container, Row, Col, Modal } from "react-bootstrap";
-import { IoMdDownload } from "react-icons/io";
-import { MdUpload, MdDelete } from "react-icons/md";
-import image from "../assets/img/image.png";
-import { FaWind } from "react-icons/fa"; // Import icon untuk cuaca
-import Select from "react-select";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import { useParams } from "react-router-dom";
+import PenerbanganMisi from "./PenerbanganMisi";
+import misiService from "../services/misi.service";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
+import ReactDOM from "react-dom";
+import { FaTrashAlt, FaDownload } from "react-icons/fa";
 
 const DetailMisi = () => {
-  const [openAccordion, setOpenAccordion] = useState(null);
-  const [checklistStatus, setChecklistStatus] = useState({
-    "Before Start": [false, false, false],
-    "Push/Start": [false, false],
-    "After Start": [false, false, false],
-    "Before Takeoff": [false, false],
-    "After Takeoff": [false, false],
-    Mission: [false, false, false],
-    "Before Landing": [false, false],
-    "After Landing": [false, false, false],
-  });
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false); // State untuk modal tambah
-  const [statusMisi, setStatusMisi] = useState("Selesai");
-  const [uploadedPhotos, setUploadedPhotos] = useState([]);
-  const [showPhotoModal, setShowPhotoModal] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const { uuid } = useParams(); // Get the uuid from URL parameters
+  const [missionDetails, setMissionDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    waktuMulai: "",
-    waktuSelesai: "",
-    flightPlan: null,
-    noticeToAirman: null,
-    izinLokasiTerbang: null,
+    photos: [],
   });
-  const [pilot, setPilot] = useState(null);
-  const [gcs, setGcs] = useState(null);
-  const [wahana, setWahana] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [photoError, setPhotoError] = useState("");
+  const [dokumenFotos, setDokumenFotos] = useState([]); // State for documentation photos
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showSuccessAdd, setShowSuccessAdd] = useState(false);
+  const [deletePhotoUuid, setDeletePhotoUuid] = useState(null);
+  const [showConfirmDeletePhoto, setShowConfirmDeletePhoto] = useState(false);
+  const [showSuccessDelete, setShowSuccessDelete] = useState(false);
 
-  const handleToggle = (index) => {
-    setOpenAccordion(openAccordion === index ? null : index);
-  };
-
-  const handleCheckboxChange = (category, index) => {
-    const newStatus = { ...checklistStatus };
-    newStatus[category][index] = !newStatus[category][index];
-    setChecklistStatus(newStatus);
-  };
-
-  const handleSaveChecklist = (category) => {
-    console.log(`Checklist for ${category} saved:`, checklistStatus[category]);
-    // Add your save logic here, e.g., sending data to the server
-  };
-
-  const allChecked = (category) => {
-    return checklistStatus[category].every((status) => status);
-  };
-
-  const handleUpload = (fileId) => {
-    setUploadedFiles([...uploadedFiles, fileId]);
-  };
-
-  const handleDelete = (fileId) => {
-    setUploadedFiles(uploadedFiles.filter((id) => id !== fileId));
-  };
-
-  const misiDetails = {
-    wahana: "Wahana 1",
-    operator: "Operator 1",
-    tanggalMisi: "2023-06-25",
-    kategori: "Pemetaan",
-    telemetry: "Net ID 1",
-    remoteControl: "2.4 Ghz",
-    videoSender: "2.4 Ghz",
-  };
-
-  const [penerbanganDetails, setPenerbanganDetails] = useState({
-    durasi: "",
-    statusMisi: "",
-    waktuMulai: "",
-    waktuSelesai: "",
-    berkas: [
-      {
-        id: 1,
-        nama: "Notice to Airman",
-        url: "https://example.com/notice-to-airman.pdf",
-      },
-      {
-        id: 2,
-        nama: "Izin Lokasi Terbang",
-        url: "https://example.com/izin-lokasi-terbang.pdf",
-      },
-      {
-        id: 3,
-        nama: "Flight Plan",
-        url: "https://example.com/flight-plan.pdf",
-      },
-      {
-        id: 4,
-        nama: "Flight Security Clearance",
-        url: "https://example.com/flight-security-clearance.pdf",
-      },
-    ],
-  });
-
-  const pilotOptions = [
-    { value: "pilot1", label: "Pilot 1" },
-    { value: "pilot2", label: "Pilot 2" },
-    { value: "pilot3", label: "Pilot 3" },
-  ];
-
-  const gcsOptions = [
-    { value: "gcs1", label: "GCS 1" },
-    { value: "gcs2", label: "GCS 2" },
-    { value: "gcs3", label: "GCS 3" },
-  ];
-
-  const wahanaOptions = [
-    { value: "wahana1", label: "Wahana 1" },
-    { value: "wahana2", label: "Wahana 2" },
-    { value: "wahana3", label: "Wahana 3" },
-  ];
-  
-  const formatDateTime = (datetime) => {
-    const options = {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZoneName: "short",
+  useEffect(() => {
+    const fetchMissionDetails = async () => {
+      try {
+        const data = await misiService.getMisiById(uuid);
+        console.log(data); // Logging data for debugging
+        setMissionDetails(data.mission);
+        setDokumenFotos(data.mission.dokumentasi_misis); // Set documentation photos
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
-    const date = new Date(datetime);
-    return date.toLocaleDateString("id-ID", options).replace(",", " WIB");
+
+    fetchMissionDetails();
+  }, [uuid]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!missionDetails) return <p>No Mission details available.</p>;
+
+  const handleDeletePhotoDokumentasi = (uuid) => {
+    setDeletePhotoUuid(uuid);
+    setShowConfirmDeletePhoto(true);
   };
 
-  const calculateDuration = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const durationMs = endDate - startDate;
-
-    const durationHrs = Math.floor(durationMs / (1000 * 60 * 60));
-    const durationMins = Math.floor(
-      (durationMs % (1000 * 60 * 60)) / (1000 * 60)
-    );
-
-    return `${durationHrs} Jam ${durationMins} Menit`;
+  const handleConfirmDelete = async () => {
+    try {
+      await misiService.deleteDokumentasi(deletePhotoUuid); // Call API to delete the photo
+      await refreshMissionDetails(); // Refresh mission details after deletion
+      setShowConfirmDeletePhoto(false);
+      setShowSuccessDelete(true);
+    } catch (error) {
+      console.error("Error deleting documentation:", error);
+    }
   };
 
-  const weatherData = [
-    { time: "12:00 WIB", windSpeed: "100 m/s" },
-    { time: "12:30 WIB", windSpeed: "120 m/s" },
-    { time: "13:00 WIB", windSpeed: "140 m/s" },
-    { time: "13:30 WIB", windSpeed: "160 m/s" },
-  ];
-
-  const renderWeatherData = () => {
-    return weatherData.map((data, index) => (
-      <div key={index} className="border border-gray-300 rounded-lg p-4 mb-2">
-        <div className="flex items-center mb-2">
-          <FaWind className="text-blue-500 text-2xl mr-2" />
-          <span className="font-bold text-gray-700">{data.time}</span>
-        </div>
-        <div className="text-gray-600">{data.windSpeed}</div>
-      </div>
-    ));
+  const handleDeletePhoto = (index) => {
+    const updatedPhotos = formData.photos.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      photos: updatedPhotos,
+    });
   };
 
-  const renderFiles = () => {
-    return penerbanganDetails.berkas.map((file) => (
-      <Row key={file.id} className="align-items-center mb-1">
-        <Col sm={5}>
-          <a
-            className="no-underline hover:no-underline text-inherit"
-            href={file.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {file.nama}
-          </a>
-        </Col>
-        <Col sm={3}>
-          {uploadedFiles.includes(file.id) ? (
-            <>
-              <button
-                className="text-red-600"
-                onClick={() => handleDelete(file.id)}
-              >
-                <MdDelete className="text-2xl" />
-              </button>
-              <button className="text-blue-700">
-                <IoMdDownload className="text-2xl" />
-              </button>
-            </>
-          ) : (
-            <button
-              className="text-green-600"
-              onClick={() => handleUpload(file.id)}
-            >
-              <MdUpload className="text-2xl" />
-            </button>
-          )}
-        </Col>
-      </Row>
-    ));
+  const handleFileChange = (e) => {
+    const { files } = e.target;
+    const selectedFiles = Array.from(files);
+
+    if (selectedFiles.length + formData.photos.length > 20) {
+      setPhotoError("You can upload a maximum of 20 photos.");
+    } else {
+      setFormData({
+        ...formData,
+        photos: [...formData.photos, ...selectedFiles],
+      });
+      setPhotoError("");
+    }
   };
 
-  const checklistItems = {
-    "Before Start": ["Item 1", "Item 2", "Item 3"],
-    "Push/Start": ["Item 4", "Item 5"],
-    "After Start": ["Item 6", "Item 7", "Item 8"],
-    "Before Takeoff": ["Item 9", "Item 10"],
-    "After Takeoff": ["Item 11", "Item 12"],
-    Mission: ["Item 13", "Item 14", "Item 15"],
-    "Before Landing": ["Item 16", "Item 17"],
-    "After Landing": ["Item 18", "Item 19", "Item 20"],
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const dataToSubmit = new FormData();
+    formData.photos.forEach((file) => {
+      dataToSubmit.append("photos", file);
+    });
+    dataToSubmit.append("misiUuid", uuid);
+
+    try {
+      const response = await misiService.addDokumentasi(dataToSubmit);
+      console.log(response.msg, response);
+
+      // Display success modal
+      setShowSuccessAdd(true);
+
+      await refreshMissionDetails();
+      handleClose();
+    } catch (error) {
+      console.error("Error adding documentation:", error);
+    }
   };
 
-  const renderChecklist = () => {
-    return Object.entries(checklistItems).map(([key, value], index) => (
-      <div key={key} className="mb-3">
-        <div
-          className={`cursor-pointer p-4 ${
-            allChecked(key)
-              ? "bg-[#57D643] text-white"
-              : "bg-gray-200 text-black"
-          } rounded-md`}
-          onClick={() => handleToggle(index)}
-        >
-          <h5>{key}</h5>
-        </div>
-        <div
-          className={`transition-max-height duration-500 ease-in-out overflow-hidden ${
-            openAccordion === index ? "max-h-screen" : "max-h-0"
-          }`}
-        >
-          <ul className="p-4 bg-white border rounded-md">
-            {value.map((item, idx) => (
-              <li key={idx} className="py-1 flex items-center">
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={checklistStatus[key][idx]}
-                  onChange={() => handleCheckboxChange(key, idx)}
-                />
-                {item}
-              </li>
-            ))}
-            {openAccordion === index && (
-              <div className="py-3">
-                <button
-                  className="bg-blue-500 text-white py-2 px-4 rounded-md"
-                  onClick={() => handleSaveChecklist(key)}
-                >
-                  Simpan
-                </button>
-              </div>
-            )}
-          </ul>
-        </div>
-      </div>
-    ));
-  };
-
-  const handleModalClose = () => setShowModal(false);
-
-  const handleStatusChange = (event) => setStatusMisi(event.target.value);
-
-  const handleModalSave = () => {
-    setPenerbanganDetails((prevDetails) => ({
-      ...prevDetails,
-      statusMisi: statusMisi, // Update status misi
-    }));
+  const handleClose = () => {
     setShowModal(false);
   };
 
-  const handleAddModalClose = () => setShowAddModal(false);
-
-  const handleAddModalSave = () => {
-    const formattedStartTime = formatDateTime(formData.waktuMulai);
-    const formattedEndTime = formatDateTime(formData.waktuSelesai);
-
-    const duration = calculateDuration(
-      formData.waktuMulai,
-      formData.waktuSelesai
-    );
-
-    setPenerbanganDetails({
-      ...penerbanganDetails,
-      waktuMulai: formattedStartTime,
-      waktuSelesai: formattedEndTime,
-      durasi: duration,
-      pilot: pilot ? pilot.label : null,
-      gcs: gcs ? gcs.label : null,
-      wahana: wahana ? wahana.label : null,
-    });
-
-    setShowAddModal(false);
+  const handleConfirmClose = () => {
+    setShowConfirm(false);
+    setShowConfirmDeletePhoto(false);
   };
 
-  const handlePhotoUpload = (event) => {
-    const files = Array.from(event.target.files);
-    const newPhotos = files.map((file) => URL.createObjectURL(file));
-    setUploadedPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
+  const refreshMissionDetails = async () => {
+    try {
+      const data = await misiService.getMisiById(uuid);
+      setMissionDetails(data.mission);
+      setDokumenFotos(data.mission.dokumentasi_misis);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const handlePhotoClick = (photo) => {
-    setSelectedPhoto(photo);
-    setShowPhotoModal(true);
+  const handleConfirm = async () => {
+    try {
+      await misiService.updateMissionStatus(uuid, { status: true });
+      await refreshMissionDetails(); // Refresh mission details after confirmation
+      setShowConfirm(false);
+    } catch (error) {
+      console.error("Error updating mission status:", error);
+    }
   };
-
-  const handlePhotoModalOpen = () => setShowPhotoModal(true);
-  const handlePhotoModalClose = () => setShowPhotoModal(false);
 
   return (
-    <div className="absolute ml-cl7 mr-cr1 mt-ct1">
-      <h3 className="text-3xl text-new-300">Misi</h3>
-      <p className="text-justify">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </p>
-
+    <div className="ml-cl7 mr-cr1">
+      <h3 className="text-3xl text-new-300 pt-10">
+        {missionDetails.judul_misi}
+      </h3>
+      <p className="text-justify">{missionDetails.deskripsi_misi}</p>
       <div className="detail-misi-container-sub_title">
         <Tabs defaultActiveKey="detail" id="tab" className="mb-3">
           <Tab eventKey="detail-misi" title="Detail Misi">
             <div className="mt-3">
               <div className="flex mb-2">
+                <span className="font-bold w-36">Status</span>
+                <span className="w-1 mx-1">:</span>
+                <span className="flex-1 text-left">
+                  {missionDetails.status ? "Kelas Abangkuh" : "Sabar Bos"}
+                </span>
+              </div>
+              <div className="flex mb-2">
+                <span className="font-bold w-36">Pembuat Misi</span>
+                <span className="w-1 mx-1">:</span>
+                <span className="flex-1 text-left">
+                  {missionDetails.creator}
+                </span>
+              </div>
+              <div className="flex mb-2">
                 <span className="font-bold w-36">Wahana</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{misiDetails.wahana}</span>
+                <span className="flex-1 text-left">
+                  {missionDetails.wahanas.map((wahana, index) => (
+                    <div key={index}>
+                      {wahana.nama_wahana} - {wahana.tipe}
+                    </div>
+                  ))}
+                </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Operator</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{misiDetails.operator}</span>
+                <span className="flex-1 text-left">
+                  {missionDetails.userMisi.map((operator, index) => (
+                    <div key={index}>
+                      {operator.name} - {operator.role}
+                    </div>
+                  ))}
+                </span>
+              </div>
+              <div className="flex mb-2">
+                <span className="font-bold w-36">Komponen</span>
+                <span className="w-1 mx-1">:</span>
+                <span className="flex-1 text-left">
+                  {missionDetails.komponens.map((komponen, index) => (
+                    <div key={index}>
+                      {komponen.nama_komponen} - {komponen.kategori}
+                    </div>
+                  ))}
+                </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Tanggal Misi</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {misiDetails.tanggalMisi}
+                  {missionDetails.createdAt}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Kategori</span>
                 <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">{misiDetails.kategori}</span>
+                <span className="flex-1 text-left">
+                  {missionDetails.kategori}
+                </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Telemetry</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {misiDetails.telemetry}
+                  {missionDetails.telemetry}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Remote Control</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {misiDetails.remoteControl}
+                  {missionDetails.remote}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-36">Video Sender</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {misiDetails.videoSender}
+                  {missionDetails.video_sender}
                 </span>
+              </div>
+              <div className="mt-3 py-1 flex justify-between">
+                <button
+                  className="py-2 px-4 shadow-md font-bold bg-blue-500 w-full h-14 text-white rounded-lg"
+                  onClick={() => setShowConfirm(true)}
+                >
+                  Konfirmasi Misi
+                </button>
               </div>
             </div>
           </Tab>
 
           <Tab eventKey="detail-penerbangan" title="Detail Penerbangan">
-            <div className="mt-3 px-2 flex justify-between">
-              <button
-                className="py-2 px-4 bg-blue-500 text-white rounded-md"
-                onClick={() => setShowAddModal(true)}
-              >
-                Tambah
-              </button>
-            </div>
-
-            <div className="mt-3 px-2 py-2">
-              <div className="bg-white border shadow-md rounded-lg p-4">
-                <h4 className="text-lg font-bold mb-3">
-                  Informasi Penerbangan
-                </h4>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">Durasi</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.durasi}
-                  </span>
-                </div>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">Status Misi</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.statusMisi}
-                  </span>
-                </div>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">Waktu Mulai</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.waktuMulai}
-                  </span>
-                </div>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">Waktu Selesai</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.waktuSelesai}
-                  </span>
-                </div>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">Pilot</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.pilot}
-                  </span>
-                </div>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">GCS</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.gcs}
-                  </span>
-                </div>
-                <div className="flex mb-2">
-                  <span className="font-bold w-36">Wahana</span>
-                  <span className="w-1 mx-1">:</span>
-                  <span className="flex-1 text-left">
-                    {penerbanganDetails.wahana}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <hr className="my-2 border-black w-full mx-auto" />
-
-            <div className="px-2 py-3">
-              <h4>Flight Plan</h4>
-              <div className="p-4 flex justify-center items-center">
-                <img
-                  src={image}
-                  alt="Flight Plan"
-                  width="100%"
-                  style={{ maxWidth: "400px" }}
-                />
-              </div>
-            </div>
-
-            <Container className="px-2 py-3">
-              <h4>Cuaca</h4>
-              <div className="p-4">{renderWeatherData()}</div>
-            </Container>
-
-            <Container className="px-2 py-3">
-              <h4>Berkas</h4>
-              <div className="p-4">{renderFiles()}</div>
-            </Container>
-
-            <Container className="px-2 py-3">
-              <h4>Checklist</h4>
-              <div className="p-4">{renderChecklist()}</div>
-            </Container>
-
-            <div className="px-2 py-1 flex justify-start">
-              <button
-                className="py-2 px-4 rounded-md bg-green-500 text-white"
-                onClick={() => setShowModal(true)}
-              >
-                Selesai
-              </button>
-            </div>
+            <PenerbanganMisi />
           </Tab>
 
           <Tab eventKey="dokumentasi" title="Dokumentasi">
             <div className="mt-3 px-2 flex justify-between">
               <button
                 className="py-2 px-4 bg-blue-500 text-white rounded-md"
-                onClick={handlePhotoModalOpen}
+                onClick={() => setShowModal(true)}
               >
                 Tambah Foto
               </button>
             </div>
-            <div className="mt-3 px-2 py-3">
-              <h4>Foto Dokumentasi</h4>
-              <div className="d-flex flex-wrap">
-                {uploadedPhotos.map((photo, index) => (
-                  <img
-                    key={index}
-                    src={photo}
-                    alt={`uploaded-${index}`}
-                    className="img-thumbnail mr-2 mb-2"
-                    style={{
-                      width: "150px",
-                      height: "150px",
-                      objectFit: "cover",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handlePhotoClick(photo)}
-                  />
-                ))}
+            <div className="mt-3">
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-gray-800">
+                  Foto Dokumentasi
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  {dokumenFotos.length > 0 ? (
+                    dokumenFotos.map((foto, index) => (
+                      <div key={index} className="relative">
+                        <Zoom>
+                          <img
+                            src={foto.foto_urls} // Accessing the image URL
+                            alt={`Foto ${index}`}
+                            className="w-full h-auto cursor-pointer"
+                          />
+                        </Zoom>
+                        <div className="absolute top-2 right-2 flex space-x-2">
+                          <FaTrashAlt
+                            className="text-red-500 cursor-pointer h-5 w-5"
+                            onClick={() =>
+                              handleDeletePhotoDokumentasi(foto.uuid)
+                            }
+                          />
+                          <FaDownload className="text-blue-500 cursor-pointer h-5 w-5" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No photos available.</p>
+                  )}
+                </div>
               </div>
             </div>
           </Tab>
         </Tabs>
-      </div>
 
-      {/* Modal Popup untuk status misi */}
-      <Modal show={showModal} onHide={handleModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Ubah Status Misi</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="statusMisi"
-                id="selesai"
-                value="Selesai"
-                checked={statusMisi === "Selesai"}
-                onChange={handleStatusChange}
-              />
-              <label className="form-check-label" htmlFor="selesai">
-                Selesai
-              </label>
-            </div>
-            <div className="form-check mt-2">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="statusMisi"
-                id="blm-selesai"
-                value="Belum Selesai"
-                checked={statusMisi === "Belum Selesai"}
-                onChange={handleStatusChange}
-              />
-              <label className="form-check-label" htmlFor="blm-selesai">
-                Belum Selesai
-              </label>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-secondary" onClick={handleModalClose}>
-            Tutup
-          </button>
-          <button className="btn btn-primary" onClick={handleModalSave}>
-            Simpan
-          </button>
-        </Modal.Footer>
-      </Modal>
+        <Modal show={showModal} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tambah Foto</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h5>Informasi</h5>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="formFoto" className="mt-3">
+                <Form.Label>Upload Foto komponen</Form.Label>
+                <Form.Control
+                  type="file"
+                  name="photos"
+                  multiple
+                  onChange={handleFileChange}
+                />
+                {photoError && (
+                  <div className="text-danger mt-2">{photoError}</div>
+                )}
+              </Form.Group>
 
-      {/* Modal Popup untuk menambah detail penerbangan */}
-      <Modal show={showAddModal} onHide={handleAddModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Tambah Detail Penerbangan</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="mb-3">
-              <label htmlFor="waktuMulai" className="form-label">
-                Waktu Mulai
-              </label>
-              <input
-                type="datetime-local"
-                className="form-control"
-                id="waktuMulai"
-                value={formData.waktuMulai}
-                onChange={(e) =>
-                  setFormData({ ...formData, waktuMulai: e.target.value })
-                }
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="waktuSelesai" className="form-label">
-                Waktu Selesai
-              </label>
-              <input
-                type="datetime-local"
-                className="form-control"
-                id="waktuSelesai"
-                value={formData.waktuSelesai}
-                onChange={(e) =>
-                  setFormData({ ...formData, waktuSelesai: e.target.value })
-                }
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="pilot" className="form-label">
-                Pilot
-              </label>
-              <Select
-                id="pilot"
-                options={pilotOptions}
-                value={pilot}
-                onChange={setPilot}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="gcs" className="form-label">
-                GCS
-              </label>
-              <Select
-                id="gcs"
-                options={gcsOptions}
-                value={gcs}
-                onChange={setGcs}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="wahana" className="form-label">
-                Wahana
-              </label>
-              <Select
-                id="wahana"
-                options={wahanaOptions}
-                value={wahana}
-                onChange={setWahana}
-              />
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-secondary" onClick={handleAddModalClose}>
-            Tutup
-          </button>
-          <button className="btn btn-primary" onClick={handleAddModalSave}>
-            Simpan
-          </button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showPhotoModal} onHide={handlePhotoModalClose} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedPhoto ? "Lihat Foto" : "Upload Foto Dokumentasi"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedPhoto ? (
-            <img
-              src={selectedPhoto}
-              alt="Selected"
-              className="img-fluid"
-              style={{ width: "100%" }}
-            />
-          ) : (
-            <>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handlePhotoUpload}
-                className="form-control"
-              />
               <div className="mt-3">
-                <h5>Foto yang Diupload</h5>
-                <div className="d-flex flex-wrap">
-                  {uploadedPhotos.map((photo, index) => (
-                    <img
-                      key={index}
-                      src={photo}
-                      alt={`uploaded-preview-${index}`}
-                      className="img-thumbnail mr-2 mb-2"
-                      style={{
-                        width: "150px",
-                        height: "150px",
-                        objectFit: "cover",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handlePhotoClick(photo)}
-                    />
-                  ))}
+                {formData.photos && formData.photos.length > 0 && (
+                  <div className="mt-4">
+                    {formData.photos.map((file, index) => (
+                      <div
+                        key={index}
+                        className="mt-4 d-flex align-items-center"
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Foto ${index}`}
+                          className="img-fluid"
+                          style={{ maxWidth: "350px", margin: "10px" }}
+                        />
+                        <Button
+                          variant="danger"
+                          onClick={() => handleDeletePhoto(index)}
+                          className="ms-2"
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Button variant="primary" type="submit" className="mt-4">
+                Submit
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        {ReactDOM.createPortal(
+          showConfirmDeletePhoto && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+                <h2 className="text-lg font-semibold mb-4">
+                  Konfirmasi Hapus Foto
+                </h2>
+                <p className="mb-4">
+                  Apakah Anda yakin ingin menghapus foto ini?
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                    onClick={handleConfirmClose}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    onClick={handleConfirmDelete}
+                  >
+                    Hapus
+                  </button>
                 </div>
               </div>
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-secondary" onClick={handlePhotoModalClose}>
-            Tutup
-          </button>
-          {!selectedPhoto && (
-            <button className="btn btn-primary" onClick={handlePhotoModalClose}>
-              Simpan
-            </button>
-          )}
-        </Modal.Footer>
-      </Modal>
+            </div>
+          ),
+          document.body
+        )}
+
+        {ReactDOM.createPortal(
+          showSuccessDelete && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+                <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
+                <p className="mb-4">Foto dokumentasi telah berhasil dihapus.</p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={() => setShowSuccessDelete(false)}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          ),
+          document.body
+        )}
+
+        {ReactDOM.createPortal(
+          showSuccessAdd && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+                <h2 className="text-lg font-semibold mb-4">
+                  Berhasil Tambah Foto
+                </h2>
+                <p className="mb-4">
+                  Foto dokumentasi telah berhasil ditambahkan.
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={() => setShowSuccessAdd(false)}
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          ),
+          document.body
+        )}
+
+        {ReactDOM.createPortal(
+          showConfirm && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+                <h2 className="text-lg font-semibold mb-4">
+                  Konfirmasi Selesai
+                </h2>
+                <p className="mb-4">
+                  Apakah Anda yakin ingin mengkonfirmasi bahwa misi ini selesai?
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                    onClick={handleConfirmClose}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={handleConfirm}
+                  >
+                    Konfirmasi
+                  </button>
+                </div>
+              </div>
+            </div>
+          ),
+          document.body
+        )}
+      </div>
     </div>
   );
 };
