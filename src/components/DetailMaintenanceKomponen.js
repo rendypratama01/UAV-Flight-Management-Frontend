@@ -1,35 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import image from "../assets/img/image.png";
+import { useParams } from "react-router-dom";
+import perbaikanKomponenService from "../services/maintenanceKomponen.service"; // Sesuaikan path import
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 
 function DetailMaintenanceKomponen() {
   // Sample data for maintenance details (replace with actual data or props)
-  const maintenanceDetails = {
-    teknisi: " Smith",
-    kategori: "Electrical",
-    tanggalPerbaikan: "2024-06-25",
-    tempatPerbaikan: "Unila",
-    biaya: "Rp 500000",
-  };
+  const { uuid } = useParams(); // Get the uuid from URL parameters
+  const [perbaikanKomponenDetails, setPerbaikanKomponenDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const foto = [image, image, image]; // Replace with actual images
+  useEffect(() => {
+    const fetchPerbaikanKomponenDetails = async () => {
+      try {
+        const data = await perbaikanKomponenService.getPerbaikanKomponenById(uuid);
+        console.log(data); // Logging data for debugging
+        setPerbaikanKomponenDetails(data.perbaikan);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPerbaikanKomponenDetails();
+  }, [uuid]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!perbaikanKomponenDetails) return <p>No Komponen details available.</p>;
 
   return (
-    <div className="absolute ml-cl7 mr-cr1 mt-ct1">
-      <h3 className="text-3xl text-new-300">Perbaikan Komponen</h3>
+    <div className="ml-cl7 mr-cr1">
+      <h3 className="text-3xl text-new-300 pt-10">{perbaikanKomponenDetails.judul_perbaikan}</h3>
       <p className="text-justify">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
+      {perbaikanKomponenDetails.deskripsi_perbaikan}
       </p>
-      <div className="flex justify-center items-center mt-ct1 mb-cb1">
-        <img src={image} alt="Logo Detail Perbaikan" width="400px" />
-      </div>
       <div className="detail_maintenance-container-sub_title">
         <Tabs defaultActiveKey="detail" id="tab" className="mb-3">
           <Tab eventKey="detail" title="Detail">
@@ -38,52 +47,57 @@ function DetailMaintenanceKomponen() {
                 <span className="font-bold w-40">Teknisi</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {maintenanceDetails.teknisi}
+                  {perbaikanKomponenDetails.nama_teknisi}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-40">Kategori</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {maintenanceDetails.kategori}
+                  {perbaikanKomponenDetails.kategori}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-40">Tanggal Perbaikan</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {maintenanceDetails.tanggalPerbaikan}
+                  {perbaikanKomponenDetails.createdAt}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-40">Tempat Perbaikan</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {maintenanceDetails.tempatPerbaikan}
+                  {perbaikanKomponenDetails.tempat_perbaikan}
                 </span>
               </div>
               <div className="flex mb-2">
                 <span className="font-bold w-40">Biaya</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {maintenanceDetails.biaya}
+                  {perbaikanKomponenDetails.biaya}
                 </span>
               </div>
             </div>
           </Tab>
-          <Tab eventKey="dokumentasi" title="Dokumentasi">
+          <Tab eventKey="foto" title="Foto">
             <div className="mt-3">
               <div className="mb-6">
-                <h4 className="text-lg font-semibold text-gray-800">Foto Perbaikan</h4>
+                <h4 className="text-lg font-semibold text-gray-800">Foto</h4>
                 <div className="grid grid-cols-3 gap-4">
-                  {foto.map((imgSrc, index) => (
-                    <img
-                      key={index}
-                      src={imgSrc}
-                      alt={`${index + 1}`}
-                      className="w-full h-auto"
-                    />
-                  ))}
+                  {perbaikanKomponenDetails.foto_perbaikan && perbaikanKomponenDetails.foto_perbaikan.length > 0 ? (
+                    perbaikanKomponenDetails.foto_perbaikan.map((foto, index) => (
+                      <Zoom key={index}>
+                        <img
+                          src={foto.foto_urls}
+                          alt={`Foto ${index + 1}`}
+                          className="w-full h-auto object-cover rounded-lg"
+                        />
+                      </Zoom>
+                    ))
+                  ) : (
+                    <p className="text-gray-600">Tidak ada foto tersedia.</p>
+                  )}
                 </div>
               </div>
             </div>
