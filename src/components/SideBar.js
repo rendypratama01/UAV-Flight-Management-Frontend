@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ReactDOM from 'react-dom';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import ReactDOM from "react-dom";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import {
   Card,
   Typography,
@@ -21,24 +21,33 @@ import {
   misiPath,
   operatorPath,
   wahanaPath,
-  maintenancePath,
+  maintenanceWahanaPath,
+  maintenanceKomponenPath,
   komponenPath,
   loginPath,
   profilePath,
 } from "../routes";
-import authService from '../services/auth.service'; // Import authService
+import authService from "../services/auth.service"; // Import authService
 
-const SideBar = () => {
+const Sidebar = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
 
   const handleLogoutShow = () => setShowLogoutModal(true);
   const handleLogoutClose = () => setShowLogoutModal(false);
 
-  const handleLogoutConfirm = () => {
-    authService.logout(); // Call the logout function
-    navigate(loginPath); // Navigate to login page
+  const handleLogoutConfirm = async () => {
+    try {
+      await authService.logoutUser(); // Call the logoutUser function
+      navigate(loginPath); // Navigate to login page
+    } catch (error) {
+      console.error("Error logging out:", error);
+      // You can add additional error handling here, like showing a notification
+    }
   };
+
+  const handleDropdownToggle = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
     <Card className="h-screen w-full max-w-[20rem] px-2 fixed shadow-xl shadow-blue-gray-900/5 bg-[#F1F2F7]">
@@ -52,7 +61,10 @@ const SideBar = () => {
       </div>
       <hr className="my-2 border-black w-72 mx-auto" />
       <List className="flex-grow">
-        <a href={dashboardPath} className="no-underline hover:no-underline text-inherit">
+        <a
+          href={dashboardPath}
+          className="no-underline hover:no-underline text-inherit"
+        >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <MdDashboard className="h-5 w-5" />
@@ -61,7 +73,10 @@ const SideBar = () => {
           </ListItem>
         </a>
 
-        <a href={misiPath} className="no-underline hover:no-underline text-inherit">
+        <a
+          href={misiPath}
+          className="no-underline hover:no-underline text-inherit"
+        >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <FaTasks className="h-5 w-5" />
@@ -70,7 +85,10 @@ const SideBar = () => {
           </ListItem>
         </a>
 
-        <a href={operatorPath} className="no-underline hover:no-underline text-inherit">
+        <a
+          href={operatorPath}
+          className="no-underline hover:no-underline text-inherit"
+        >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <FaUserAlt className="h-5 w-5" />
@@ -79,7 +97,10 @@ const SideBar = () => {
           </ListItem>
         </a>
 
-        <a href={wahanaPath} className="no-underline hover:no-underline text-inherit">
+        <a
+          href={wahanaPath}
+          className="no-underline hover:no-underline text-inherit"
+        >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <TbDrone className="h-5 w-5" />
@@ -88,16 +109,62 @@ const SideBar = () => {
           </ListItem>
         </a>
 
-        <a href={maintenancePath} className="no-underline hover:no-underline text-inherit">
-          <ListItem className="hover:text-new-200">
-            <ListItemPrefix>
-              <GrHostMaintenance className="h-5 w-5" />
-            </ListItemPrefix>
-            Perbaikan
-          </ListItem>
-        </a>
+        {/* Dropdown for Perbaikan */}
+        <div>
+          <button
+            className="w-full flex items-center pl-3 py-3 hover:bg-gray-200 rounded"
+            onClick={handleDropdownToggle}
+          >
+            <GrHostMaintenance className="h-5 w-5" />
+            <span className="pl-4">Perbaikan</span>
+            <svg
+              className={`ml-auto w-4 h-4 transform transition-transform duration-300 ${
+                isDropdownOpen ? "rotate-180" : "rotate-0"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          {isDropdownOpen && (
+            <div className="pl-8 mt-2 space-y-1">
+              <a
+                href={maintenanceWahanaPath}
+                className="block no-underline hover:no-underline text-inherit"
+              >
+                <ListItem className="hover:text-new-200">
+                  <ListItemPrefix>
+                    {/* <GrHostMaintenance className="h-5 w-5" /> */}
+                  </ListItemPrefix>
+                  Perbaikan Wahana
+                </ListItem>
+              </a>
+              <a
+                href={maintenanceKomponenPath}
+                className="block no-underline hover:no-underline text-inherit"
+              >
+                <ListItem className="hover:text-new-200">
+                  <ListItemPrefix>
+                    {/* <GrHostMaintenance className="h-5 w-5" /> */}
+                  </ListItemPrefix>
+                  Perbaikan komponen
+                </ListItem>
+              </a>
+            </div>
+          )}
+        </div>
 
-        <a href={komponenPath} className="no-underline hover:no-underline text-inherit">
+        <a
+          href={komponenPath}
+          className="no-underline hover:no-underline text-inherit"
+        >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <FaTools className="h-5 w-5" />
@@ -108,7 +175,10 @@ const SideBar = () => {
 
         <hr className="my-2 border-black w-72 mx-auto" />
 
-        <a href={profilePath} className="no-underline hover:no-underline text-inherit">
+        <a
+          href={profilePath}
+          className="no-underline hover:no-underline text-inherit"
+        >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
               <CgProfile className="h-5 w-5" />
@@ -117,7 +187,10 @@ const SideBar = () => {
           </ListItem>
         </a>
 
-        <ListItem className="hover:text-new-200 cursor-pointer" onClick={handleLogoutShow}>
+        <ListItem
+          className="hover:text-new-200 cursor-pointer"
+          onClick={handleLogoutShow}
+        >
           <ListItemPrefix>
             <FiLogOut className="h-5 w-5" />
           </ListItemPrefix>
@@ -154,4 +227,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default Sidebar;
