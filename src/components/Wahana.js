@@ -9,37 +9,46 @@ import Form from "react-bootstrap/Form";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import wahanaService from "../services/wahana.service";
+import { detailWahanaPath } from "../routes";
+import ReactDOM from "react-dom";
 
 function Wahana() {
   const [showModal, setShowModal] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [formData, setFormData] = useState({
     nama: "",
     deskripsi: "",
-    operasional: "",
-    photos: [],
     tipe: "",
     wingspan: "",
+    jumlah_rotor: "",
     length: "",
     material: "",
     propulsi: "",
     baterai: "",
     payload: "",
     durasi: "",
-    cangkupan: "",
+    cakupan: "",
     ketinggian: "",
     kapasitas: "",
-    rotor: "",
+    photos: [],
   });
   const [selectedType, setSelectedType] = useState("");
   const [wahanaData, setWahanaData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [photoError, setPhotoError] = useState("");
+  const [WahanaId, setWahanaId] = useState(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showSuccessDelete, setShowSuccessDelete] = useState(false);
+  const [deleteWahanaId, setDeleteWahanaId] = useState(null);
+  const [showSuccessAdd, setShowSuccessAdd] = useState(false);
+  const [showSuccessUpdate, setShowSuccessUpdate] = useState(false);
 
   useEffect(() => {
     const fetchWahana = async () => {
       try {
         const response = await wahanaService.getWahana();
-        console.log("Fetched Wahana Response:", response);
+        console.log(response?.msg, response);
 
-        // Cek jika respons adalah objek dan memiliki properti 'wahana'
         if (
           typeof response === "object" &&
           response !== null &&
@@ -53,15 +62,124 @@ function Wahana() {
           );
         }
       } catch (error) {
-        console.error("Error fetching wahana data:", error);
+        console.error(error.msg, error);
       }
     };
 
     fetchWahana();
   }, []);
 
+  useEffect(() => {
+    const searchWahanaData = async () => {
+      try {
+        if (searchQuery) {
+          const response = await wahanaService.searchWahana({
+            query: searchQuery,
+          });
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            Array.isArray(response.wahana)
+          ) {
+            setWahanaData(response.wahana);
+          } else {
+            console.error("Invalid search response format");
+          }
+        } else {
+          const response = await wahanaService.getWahana();
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            Array.isArray(response.wahana)
+          ) {
+            setWahanaData(response.wahana);
+          } else {
+            console.error("Invalid response format");
+          }
+        }
+      } catch (error) {
+        console.error(error.msg, error);
+      }
+    };
+
+    searchWahanaData();
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (WahanaId) {
+      const fetchWahanaById = async () => {
+        try {
+          const response = await wahanaService.getWahanaById(WahanaId);
+          if (
+            typeof response === "object" &&
+            response !== null &&
+            response.wahana
+          ) {
+            setFormData({
+              nama: response.wahana.nama_wahana,
+              deskripsi: response.wahana.deskripsi_wahana,
+              tipe: response.wahana.tipe,
+              wingspan: response.wahana.wingspan,
+              jumlah_rotor: response.wahana.jumlah_rotor,
+              length: response.wahana.length,
+              material: response.wahana.material,
+              propulsi: response.wahana.propulsi,
+              baterai: response.wahana.baterai,
+              payload: response.wahana.payload,
+              durasi: response.wahana.durasi,
+              cakupan: response.wahana.cakupan,
+              ketinggian: response.wahana.ketinggian,
+              kapasitas: response.wahana.kapasitas,
+              photos: response.wahana.photos || [],
+            });
+            setSelectedType(response.wahana.tipe);
+            handleShow();
+          } else {
+            console.error(
+              "Fetched data is not an object or does not contain 'wahana'."
+            );
+          }
+        } catch (error) {
+          console.error(error.msg, error);
+        }
+      };
+
+      fetchWahanaById();
+    }
+  }, [WahanaId]);
+
   const handleShow = () => setShowModal(true);
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    setShowModal(false);
+    setIsUpdate(false);
+    setWahanaId(null);
+    setFormData({
+      nama: "",
+      deskripsi: "",
+      tipe: "",
+      wingspan: "",
+      jumlah_rotor: "",
+      length: "",
+      material: "",
+      propulsi: "",
+      baterai: "",
+      payload: "",
+      durasi: "",
+      cakupan: "",
+      ketinggian: "",
+      kapasitas: "",
+      photos: [],
+    });
+    setPhotoError("");
+  };
+
+  const handleDeletePhoto = (index) => {
+    const updatedPhotos = formData.photos.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      photos: updatedPhotos,
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,11 +190,18 @@ function Wahana() {
   };
 
   const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: Array.from(files), // Handle multiple files
-    });
+    const { files } = e.target;
+    const selectedFiles = Array.from(files);
+
+    if (selectedFiles.length + formData.photos.length > 6) {
+      setPhotoError("You can upload a maximum of 6 photos.");
+    } else {
+      setFormData({
+        ...formData,
+        photos: [...formData.photos, ...selectedFiles],
+      });
+      setPhotoError("");
+    }
   };
 
   const handleTypeChange = (e) => {
@@ -91,10 +216,8 @@ function Wahana() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Create a FormData instance
     const dataToSubmit = new FormData();
 
-    // Append form data fields
     Object.keys(formData).forEach((key) => {
       if (Array.isArray(formData[key])) {
         formData[key].forEach((file) => dataToSubmit.append(key, file));
@@ -104,20 +227,84 @@ function Wahana() {
     });
 
     try {
-      const response = await wahanaService.addWahana(dataToSubmit);
-      console.log("Wahana data successfully posted:", response);
-      handleClose(); // Close the modal
-      // Optionally, show a success message or update the data table
+      if (isUpdate) {
+        const response = await wahanaService.updateWahana(
+          WahanaId,
+          dataToSubmit
+        );
+        console.log(response.msg, response);
+
+        // Display success update modal
+        setShowSuccessUpdate(true);
+      } else {
+        const response = await wahanaService.addWahana(dataToSubmit);
+        console.log(response.msg, response);
+
+        // Display success add modal
+        setShowSuccessAdd(true);
+      }
+
+      const updatedResponse = await wahanaService.getWahana();
+      if (
+        typeof updatedResponse === "object" &&
+        updatedResponse !== null &&
+        Array.isArray(updatedResponse.wahana)
+      ) {
+        setWahanaData(updatedResponse.wahana);
+        console.log("Data successfully updated");
+      } else {
+        console.error(
+          "Fetched data is not an object or does not contain an array 'wahana'."
+        );
+      }
+
+      handleClose();
     } catch (error) {
-      console.error("Error posting wahana data:", error);
-      // Optionally, show an error message to the user
+      console.error(
+        isUpdate ? "Error updating wahana data:" : "Error posting wahana data:",
+        error
+      );
     }
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await wahanaService.deleteWahana(deleteWahanaId);
+      setShowSuccessDelete(true);
+
+      const updatedResponse = await wahanaService.getWahana();
+      if (
+        typeof updatedResponse === "object" &&
+        updatedResponse !== null &&
+        Array.isArray(updatedResponse.wahana)
+      ) {
+        setWahanaData(updatedResponse.wahana);
+      } else {
+        console.error(
+          "Fetched data is not an object or does not contain an array 'wahana'."
+        );
+      }
+
+      setShowConfirmDelete(false);
+    } catch (error) {
+      console.error("Error deleting operator:", error);
+    }
+  };
+
+  const handleEdit = (wahana) => {
+    setIsUpdate(true);
+    setWahanaId(wahana.uuid);
+  };
+
+  const handleDelete = (uuid) => {
+    setDeleteWahanaId(uuid);
+    setShowConfirmDelete(true);
   };
 
   const customStyles = {
     headCells: {
       style: {
-        backgroundColor: "#EAEAEA", // Change to your desired color
+        backgroundColor: "#EAEAEA",
       },
     },
   };
@@ -126,11 +313,6 @@ function Wahana() {
     {
       name: "Nama",
       selector: (row) => row.nama_wahana,
-      sortable: true,
-    },
-    {
-      name: "Deskripsi",
-      selector: (row) => row.deskripsi_wahana,
       sortable: true,
     },
     {
@@ -149,16 +331,19 @@ function Wahana() {
         <div className="flex gap-3">
           <button className="text-gray-700">
             <a
-              href={`/wahana/${row.uuid}`} // Adjust path as needed
+              href={`${detailWahanaPath}/${row.uuid}`}
               className="no-underline hover:no-underline text-inherit"
             >
               <TbListDetails className="text-2xl" />
             </a>
           </button>
-          <button className="text-blue-900">
+          <button className="text-blue-900" onClick={() => handleEdit(row)}>
             <FaEdit className="text-2xl" />
           </button>
-          <button className="text-red-600">
+          <button
+            className="text-red-600"
+            onClick={() => handleDelete(row.uuid)}
+          >
             <MdDelete className="text-2xl" />
           </button>
         </div>
@@ -169,10 +354,24 @@ function Wahana() {
   return (
     <div className="ml-cl7">
       <h3 className="pt-10 text-3xl text-new-300">Wahana</h3>
+
+      {/* Search Bar */}
+      <div className="mb-4 pt-5">
+        <Form inline>
+          <Form.Control
+            type="text"
+            placeholder="Cari nama, status, atau tipe..."
+            className="mr-2"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </Form>
+      </div>
+
       <DataTable
         title="Data Wahana"
         columns={columns}
-        data={wahanaData}
+        data={wahanaData} // Use filtered data
         fixedHeader
         fixedHeaderScrollHeight="530px"
         pagination
@@ -191,7 +390,9 @@ function Wahana() {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Tambah Wahana</Modal.Title>
+          <Modal.Title>
+            {isUpdate ? "Edit Wahana" : "Tambah Wahana"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
@@ -219,17 +420,6 @@ function Wahana() {
                   />
                 </Form.Group>
 
-                <Form.Group controlId="formOperasional" className="mt-3">
-                  <Form.Label>Operasional</Form.Label>
-                  <Form.Control
-                    type="number"
-                    placeholder="Masukkan jam operasional"
-                    name="operasional"
-                    value={formData.operasional}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-
                 <Form.Group controlId="formType" className="mt-3">
                   <Form.Label>Tipe</Form.Label>
                   <Form.Control
@@ -239,15 +429,15 @@ function Wahana() {
                     onChange={handleTypeChange}
                   >
                     <option value="">Pilih tipe...</option>
-                    <option value="fixed">Fixed Wing</option>
-                    <option value="multirotor">Multirotor</option>
-                    <option value="vtol">Vtol Plane</option>
+                    <option value="Fixed Wing">Fixed Wing</option>
+                    <option value="Multirotor">Multirotor</option>
+                    <option value="VTOL">Vtol Plane</option>
                   </Form.Control>
                 </Form.Group>
               </Tab>
 
               <Tab eventKey="spesifikasi" title="Spesifikasi">
-                {selectedType === "fixed" && (
+                {selectedType === "Fixed Wing" && (
                   <>
                     <Form.Group controlId="formWingspan" className="mt-3">
                       <Form.Label>Wingspan (mm)</Form.Label>
@@ -273,15 +463,15 @@ function Wahana() {
                   </>
                 )}
 
-                {selectedType === "multirotor" && (
+                {selectedType === "Multirotor" && (
                   <>
                     <Form.Group controlId="formRotor" className="mt-3">
                       <Form.Label>Rotor</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan jumlah rotor"
-                        name="rotor"
-                        value={formData.rotor}
+                        name="jumlah_rotor"
+                        value={formData.jumlah_rotor}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
@@ -299,7 +489,7 @@ function Wahana() {
                   </>
                 )}
 
-                {selectedType === "vtol" && (
+                {selectedType === "VTOL" && (
                   <>
                     <Form.Group controlId="formWingspan" className="mt-3">
                       <Form.Label>Wingspan (mm)</Form.Label>
@@ -317,8 +507,8 @@ function Wahana() {
                       <Form.Control
                         type="text"
                         placeholder="Masukkan jumlah rotor"
-                        name="rotor"
-                        value={formData.rotor}
+                        name="jumlah_rotor"
+                        value={formData.jumlah_rotor}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
@@ -391,13 +581,13 @@ function Wahana() {
                   />
                 </Form.Group>
 
-                <Form.Group controlId="formCangkupan" className="mt-3">
-                  <Form.Label>Cangkupan (ha)</Form.Label>
+                <Form.Group controlId="formCakupan" className="mt-3">
+                  <Form.Label>Cakupan (ha)</Form.Label>
                   <Form.Control
                     type="number"
-                    placeholder="Masukkan cangkupan"
-                    name="cangkupan"
-                    value={formData.cangkupan}
+                    placeholder="Masukkan cakupan"
+                    name="cakupan"
+                    value={formData.cakupan}
                     onChange={handleInputChange}
                   />
                 </Form.Group>
@@ -430,23 +620,36 @@ function Wahana() {
                   <Form.Label>Upload Foto</Form.Label>
                   <Form.Control
                     type="file"
-                    name="photos" // Adjusted name to match formData key
+                    name="photos"
                     multiple
                     onChange={handleFileChange}
                   />
+                  {photoError && (
+                    <div className="text-danger mt-2">{photoError}</div>
+                  )}
                 </Form.Group>
 
                 <div className="mt-3">
                   {formData.photos && formData.photos.length > 0 && (
                     <div className="mt-4">
                       {formData.photos.map((file, index) => (
-                        <div key={index} className="mt-4">
+                        <div
+                          key={index}
+                          className="mt-4 d-flex align-items-center"
+                        >
                           <img
                             src={URL.createObjectURL(file)}
                             alt={`Foto ${index}`}
                             className="img-fluid"
-                            style={{ maxWidth: "200px", margin: "10px" }}
+                            style={{ maxWidth: "350px", margin: "10px" }}
                           />
+                          <Button
+                            variant="danger"
+                            onClick={() => handleDeletePhoto(index)}
+                            className="ms-2"
+                          >
+                            Hapus
+                          </Button>
                         </div>
                       ))}
                     </div>
@@ -456,11 +659,103 @@ function Wahana() {
             </Tabs>
 
             <Button variant="primary" type="submit" className="mt-4">
-              Submit
+              {isUpdate ? "Update" : "Submit"}
             </Button>
           </Form>
         </Modal.Body>
       </Modal>
+
+      {ReactDOM.createPortal(
+        showConfirmDelete && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h2>
+              <p className="mb-4">
+                Apakah Anda yakin ingin menghapus data wahana ini?
+              </p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  onClick={() => setShowConfirmDelete(false)}
+                >
+                  Batal
+                </button>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={handleDeleteConfirm}
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
+
+      {ReactDOM.createPortal(
+        showSuccessDelete && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
+              <p className="mb-4">wahana telah berhasil dihapus.</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setShowSuccessDelete(false)}
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
+
+      {ReactDOM.createPortal(
+        showSuccessAdd && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">
+                Berhasil Tambah Data
+              </h2>
+              <p className="mb-4">Data wahana telah berhasil ditambahkan.</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setShowSuccessAdd(false)}
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
+
+      {ReactDOM.createPortal(
+        showSuccessUpdate && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+              <h2 className="text-lg font-semibold mb-4">
+                Berhasil Update Data
+              </h2>
+              <p className="mb-4">Data wahana telah berhasil diperbarui.</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setShowSuccessUpdate(false)}
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </div>
+        ),
+        document.body
+      )}
     </div>
   );
 }
