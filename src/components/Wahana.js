@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { FaEdit, FaPlus } from "react-icons/fa";
+import { FaEdit, FaPlus, FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbListDetails } from "react-icons/tb";
 import Button from "react-bootstrap/Button";
@@ -31,6 +31,7 @@ function Wahana() {
     ketinggian: "",
     kapasitas: "",
     photos: [],
+    status: false,
   });
   const [selectedType, setSelectedType] = useState("");
   const [wahanaData, setWahanaData] = useState([]);
@@ -130,7 +131,10 @@ function Wahana() {
               cakupan: response.wahana.cakupan,
               ketinggian: response.wahana.ketinggian,
               kapasitas: response.wahana.kapasitas,
-              photos: response.wahana.photos || [],
+              photos:
+                response.wahana.foto_wahanas.map((photo) => photo.foto_urls) ||
+                [],
+              status: response.wahana.status || false,
             });
             setSelectedType(response.wahana.tipe);
             handleShow();
@@ -169,6 +173,7 @@ function Wahana() {
       ketinggian: "",
       kapasitas: "",
       photos: [],
+      status: false,
     });
     setPhotoError("");
   };
@@ -186,6 +191,13 @@ function Wahana() {
     setFormData({
       ...formData,
       [name]: value,
+    });
+  };
+
+  const handleStatusChange = (e) => {
+    setFormData({
+      ...formData,
+      status: e.target.value === "true",
     });
   };
 
@@ -322,7 +334,7 @@ function Wahana() {
     },
     {
       name: "Status",
-      cell: (row) => (row.status ? "Aktif" : "Mati"),
+      cell: (row) => (row.status ? "Aktif" : "Nonaktif"),
       sortable: true,
     },
     {
@@ -406,6 +418,7 @@ function Wahana() {
                     name="nama"
                     value={formData.nama}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -417,6 +430,7 @@ function Wahana() {
                     name="deskripsi"
                     value={formData.deskripsi}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -427,6 +441,7 @@ function Wahana() {
                     name="tipe"
                     value={formData.tipe}
                     onChange={handleTypeChange}
+                    required
                   >
                     <option value="">Pilih tipe...</option>
                     <option value="Fixed Wing">Fixed Wing</option>
@@ -434,6 +449,21 @@ function Wahana() {
                     <option value="VTOL">Vtol Plane</option>
                   </Form.Control>
                 </Form.Group>
+
+                {isUpdate && (
+                  <Form.Group controlId="formStatus" className="mt-3">
+                    <Form.Label>Status</Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="status"
+                      value={formData.status ? "true" : "false"}
+                      onChange={handleStatusChange}
+                    >
+                      <option value="true">Aktif</option>
+                      <option value="false">Nonaktif</option>
+                    </Form.Control>
+                  </Form.Group>
+                )}
               </Tab>
 
               <Tab eventKey="spesifikasi" title="Spesifikasi">
@@ -447,6 +477,7 @@ function Wahana() {
                         name="wingspan"
                         value={formData.wingspan}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
 
@@ -458,6 +489,7 @@ function Wahana() {
                         name="length"
                         value={formData.length}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
                   </>
@@ -473,6 +505,7 @@ function Wahana() {
                         name="jumlah_rotor"
                         value={formData.jumlah_rotor}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
 
@@ -484,6 +517,7 @@ function Wahana() {
                         name="length"
                         value={formData.length}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
                   </>
@@ -499,6 +533,7 @@ function Wahana() {
                         name="wingspan"
                         value={formData.wingspan}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
 
@@ -510,6 +545,7 @@ function Wahana() {
                         name="jumlah_rotor"
                         value={formData.jumlah_rotor}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
 
@@ -521,6 +557,7 @@ function Wahana() {
                         name="length"
                         value={formData.length}
                         onChange={handleInputChange}
+                        required
                       />
                     </Form.Group>
                   </>
@@ -534,6 +571,7 @@ function Wahana() {
                     name="material"
                     value={formData.material}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -545,6 +583,7 @@ function Wahana() {
                     name="propulsi"
                     value={formData.propulsi}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -556,6 +595,7 @@ function Wahana() {
                     name="baterai"
                     value={formData.baterai}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -567,6 +607,7 @@ function Wahana() {
                     name="payload"
                     value={formData.payload}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -578,6 +619,7 @@ function Wahana() {
                     name="durasi"
                     value={formData.durasi}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -589,6 +631,7 @@ function Wahana() {
                     name="cakupan"
                     value={formData.cakupan}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -600,6 +643,7 @@ function Wahana() {
                     name="ketinggian"
                     value={formData.ketinggian}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -611,6 +655,7 @@ function Wahana() {
                     name="kapasitas"
                     value={formData.kapasitas}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
               </Tab>
@@ -632,14 +677,15 @@ function Wahana() {
                 <div className="mt-3">
                   {formData.photos && formData.photos.length > 0 && (
                     <div className="mt-4">
-                      {formData.photos.map((file, index) => (
+                      {formData.photos.map((photoUrl, index) => (
                         <div
                           key={index}
                           className="mt-4 d-flex align-items-center"
                         >
                           <img
-                            src={URL.createObjectURL(file)}
-                            alt={`Foto ${index}`}
+                            key={index}
+                            src={photoUrl}
+                            alt={`Wahana Foto ${index + 1}`}
                             className="img-fluid"
                             style={{ maxWidth: "350px", margin: "10px" }}
                           />
@@ -696,12 +742,18 @@ function Wahana() {
       {ReactDOM.createPortal(
         showSuccessDelete && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
-              <p className="mb-4">wahana telah berhasil dihapus.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data wahana telah berhasil dihapus.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessDelete(false)}
                 >
                   Oke
@@ -716,14 +768,18 @@ function Wahana() {
       {ReactDOM.createPortal(
         showSuccessAdd && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Tambah Data
-              </h2>
-              <p className="mb-4">Data wahana telah berhasil ditambahkan.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data wahana telah berhasil ditambahkan.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessAdd(false)}
                 >
                   Oke
@@ -738,14 +794,18 @@ function Wahana() {
       {ReactDOM.createPortal(
         showSuccessUpdate && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Update Data
-              </h2>
-              <p className="mb-4">Data wahana telah berhasil diperbarui.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data wahana telah berhasil diperbarui.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessUpdate(false)}
                 >
                   Oke

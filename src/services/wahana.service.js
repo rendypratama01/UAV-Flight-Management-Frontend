@@ -18,7 +18,7 @@ const getWahana = async () => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/wahana', {
+    const response = await api.get('/wahanas', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -102,7 +102,7 @@ const searchWahana = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/search-wahana', {
+    const response = await api.get('/wahanas/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
