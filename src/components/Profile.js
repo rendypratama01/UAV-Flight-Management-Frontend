@@ -6,6 +6,7 @@ import { loginPath } from "../routes";
 import operatorService from "../services/operator.service";
 import authService from "../services/auth.service"; // Import authService
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Modal, Button, Form } from "react-bootstrap";
 
 function Profile() {
   const [activeTab, setActiveTab] = useState("Informasi");
@@ -18,97 +19,40 @@ function Profile() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [changePasswordError, setChangePasswordError] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate
-
-  const missions = [
-    {
-      id: 1,
-      judul: "Pemetaan Krakatau",
-      kategori: "Pemetaan",
-      tanggal: "15 Agustus 2023",
-    },
-    {
-      id: 2,
-      judul: "Monitoring Gunung Bromo",
-      kategori: "Monitoring",
-      tanggal: "26 Agustus 2023",
-    },
-    {
-      id: 3,
-      judul: "Kompetisi Fotografi Semeru",
-      kategori: "Kompetisi",
-      tanggal: "13 September 2023",
-    },
-    {
-      id: 4,
-      judul: "Pengiriman Logistik Merapi",
-      kategori: "Pengiriman",
-      tanggal: "19 Oktober 2023",
-    },
-    {
-      id: 5,
-      judul: "Pemetaan Rinjani",
-      kategori: "Pemetaan",
-      tanggal: "14 November 2023",
-    },
-    {
-      id: 6,
-      judul: "Monitoring Gunung Agung",
-      kategori: "Monitoring",
-      tanggal: "15 Desember 2023",
-    },
-  ];
-
-  const perbaikan = [
-    {
-      id: 1,
-      judul: "Perbaikan 1",
-      kategori: "Pemetaan",
-      tanggal: "15 Agustus 2023",
-    },
-    {
-      id: 2,
-      judul: "Perbaikan 2",
-      kategori: "Monitoring",
-      tanggal: "26 Agustus 2023",
-    },
-    {
-      id: 3,
-      judul: "Perbaikan 3",
-      kategori: "Kompetisi",
-      tanggal: "13 September 2023",
-    },
-    {
-      id: 4,
-      judul: "Perbaikan 4",
-      kategori: "Pengiriman",
-      tanggal: "19 Oktober 2023",
-    },
-    {
-      id: 5,
-      judul: "Perbaikan 5",
-      kategori: "Pemetaan",
-      tanggal: "14 November 2023",
-    },
-    {
-      id: 6,
-      judul: "Perbaikan 6",
-      kategori: "Monitoring",
-      tanggal: "15 Desember 2023",
-    },
-  ];
+  const [photoError, setPhotoError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    role: "",
+    nik: "",
+    tanggal_lahir: "",
+    nomor_telepon: "",
+    photo_profile: "",
+    status: false,
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const uuid =
-          localStorage.getItem("userUUID") ||
-          sessionStorage.getItem("userUUID");
+        const uuid = localStorage.getItem("userUUID");
         if (!uuid) {
           throw new Error("No user ID found. Please login.");
         }
 
         const response = await operatorService.getOperatorById(uuid);
         setUserData(response.user);
+
+        setFormData({
+          name: response.user.name,
+          email: response.user.email,
+          role: response.user.role,
+          nik: response.user.nik,
+          tanggal_lahir: response.user.tanggal_lahir,
+          nomor_telepon: response.user.nomor_telepon,
+          photo_profile: response.user.photo_profile,
+          status: response.user.status,
+        });
       } catch (error) {
         setError("Failed to load user data.");
         console.error("Error fetching user data:", error);
@@ -139,11 +83,16 @@ function Profile() {
     if (newPassword !== confirmNewPassword) {
       setChangePasswordError("New passwords do not match.");
       return;
-    }console.log("New Password:", newPassword);
+    }
+    console.log("New Password:", newPassword);
     console.log("Confirm New Password:", confirmNewPassword);
 
     try {
-      await authService.changePassword(oldPassword, newPassword, confirmNewPassword);
+      await authService.changePassword(
+        oldPassword,
+        newPassword,
+        confirmNewPassword
+      );
       handleChangePasswordClose(); // Close the modal on success
     } catch (error) {
       console.error("Error changing password:", error);
@@ -153,12 +102,91 @@ function Profile() {
 
   if (error) return <p className="text-red-500">{error}</p>;
 
+  const truncateTextByChar = (text, charLimit) => {
+    if (!text) return "";
+    if (text.length <= charLimit) return text;
+    return text.slice(0, charLimit) + "...";
+  };
+
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => {
+    setShowModal(false);
+    setFormData({
+      name: "",
+      email: "",
+      role: "",
+      nik: "",
+      tanggal_lahir: "",
+      nomor_telepon: "",
+      photo_profile: "",
+      status: false,
+    });
+    setPhotoError("");
+  };
+
+  const handleDeletePhoto = () => {
+    setFormData({
+      ...formData,
+      photo_profile: "", // Set ke string kosong jika tidak ada foto
+    });
+  };
+
+  const handleStatusChange = (e) => {
+    setFormData({
+      ...formData,
+      status: e.target.value === "true",
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleFileChange = (e) => {
+    const { files } = e.target;
+    const selectedFiles = Array.from(files);
+
+    if (selectedFiles.length > 1) {
+      setPhotoError("You can upload a maximum of 1 photo.");
+    } else {
+      // Ambil URL objek atau nama file
+      const file = selectedFiles[0];
+      const fileURL = file ? URL.createObjectURL(file) : "";
+
+      setFormData({
+        ...formData,
+        photo_profile: fileURL, // Simpan URL objek atau nama file
+      });
+      setPhotoError("");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Lakukan logika untuk menyimpan perubahan
+    try {
+      const uuid = localStorage.getItem("userUUID");
+      if (!uuid) {
+        throw new Error("No user ID found. Please login.");
+      }
+
+      await operatorService.updateOperator(uuid, formData);
+      handleClose();
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
   return (
     <div className="ml-cl7">
       <h3 className="pt-10 text-3xl text-new-300">Profil</h3>
       <div className="min-h-screen flex flex-col items-center p-6">
         {/* Tabs */}
-        <div className="w-full max-w-lg mb-6">
+        <div className="w-full max-w-xl mb-6">
           <div className="flex border-b border-gray-300">
             <button
               className={`px-4 py-2 text-lg ${
@@ -182,20 +210,31 @@ function Profile() {
             </button>
             <button
               className={`px-4 py-2 text-lg ${
-                activeTab === "Perbaikan"
+                activeTab === "PerbaikanWahana"
                   ? "text-blue-500 border-b-2 border-blue-500"
                   : "text-gray-700"
               }`}
-              onClick={() => setActiveTab("Perbaikan")}
+              onClick={() => setActiveTab("PerbaikanWahana")}
             >
-              Perbaikan
+              Perbaikan Wahana
+            </button>
+
+            <button
+              className={`px-4 py-2 text-lg ${
+                activeTab === "PerbaikanKomponen"
+                  ? "text-blue-500 border-b-2 border-blue-500"
+                  : "text-gray-700"
+              }`}
+              onClick={() => setActiveTab("PerbaikanKomponen")}
+            >
+              Perbaikan Komponen
             </button>
           </div>
         </div>
 
         {/* Tab Content */}
         {activeTab === "Informasi" && userData && (
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-xl">
             {/* Profile Info Section */}
             <div className="bg-white border border-gray-300 rounded-lg mb-6 p-6">
               <div className="flex items-center space-x-6">
@@ -262,7 +301,10 @@ function Profile() {
                 Pengaturan
               </h3>
               <div className="space-y-4">
-                <button className="flex items-center space-x-4 w-full text-left p-2 hover:bg-gray-100 rounded-md">
+                <button
+                  onClick={handleShow}
+                  className="flex items-center space-x-4 w-full text-left p-2 hover:bg-gray-100 rounded-md"
+                >
                   <FaEdit className="text-blue-500 text-lg" />
                   <span className="text-gray-700 text-lg">Edit Profil</span>
                 </button>
@@ -286,43 +328,200 @@ function Profile() {
         )}
 
         {activeTab === "Misi" && (
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-xl">
             <div className="grid grid-cols-1 gap-6">
-              {missions.map((mission) => (
+              {userData.missions.map((mission) => (
                 <div
                   key={mission.id}
-                  className="bg-white border border-gray-300 rounded-lg p-4 hover:bg-gray-100 cursor-pointer"
+                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                 >
-                  <h4 className="text-lg font-semibold text-gray-800">
-                    {mission.judul}
+                  <h4 className="text-xl font-bold mb-2">
+                    {truncateTextByChar(mission.judul_misi, 20)}
                   </h4>
-                  <p className="text-gray-600">{mission.kategori}</p>
-                  <p className="text-gray-600">{mission.tanggal}</p>
+                  <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
+                  <p className="text-sm">Tanggal: {mission.createdAt}</p>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {activeTab === "Perbaikan" && (
-          <div className="w-full max-w-lg">
+        {activeTab === "PerbaikanWahana" && (
+          <div className="w-full max-w-xl">
             <div className="grid grid-cols-1 gap-6">
-              {perbaikan.map((perbaikan) => (
+              {userData.user_perbaikanWahana.map((perbaikan) => (
                 <div
                   key={perbaikan.id}
-                  className="bg-white border border-gray-300 rounded-lg p-4 hover:bg-gray-100 cursor-pointer"
+                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
                 >
-                  <h4 className="text-lg font-semibold text-gray-800">
-                    {perbaikan.judul}
+                  <h4 className="text-xl font-bold mb-2">
+                    {perbaikan.judul_perbaikan}
                   </h4>
-                  <p className="text-gray-600">{perbaikan.kategori}</p>
-                  <p className="text-gray-600">{perbaikan.tanggal}</p>
+                  <p className="text-sm mb-1">Kategori: {perbaikan.kategori}</p>
+                  <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
+                  <p className="text-sm">Biaya: {perbaikan.biaya}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "PerbaikanKomponen" && (
+          <div className="w-full max-w-xl">
+            <div className="grid grid-cols-1 gap-6">
+              {userData.user_perbaikanKomponen.map((perbaikan) => (
+                <div
+                  key={perbaikan.id}
+                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                >
+                  <h4 className="text-xl font-bold mb-2">
+                    {perbaikan.judul_perbaikan}
+                  </h4>
+                  <p className="text-sm mb-1">Kategori: {perbaikan.kategori}</p>
+                  <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
+                  <p className="text-sm">Biaya: {perbaikan.biaya}</p>
                 </div>
               ))}
             </div>
           </div>
         )}
       </div>
+
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Profile</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formNama">
+              <Form.Label>Nama</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan nama"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formEmail" className="mt-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Masukkan email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formRole" className="mt-3">
+              <Form.Label>Role</Form.Label>
+              <Form.Control
+                as="select"
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Pilih role...</option>
+                <option value="Mission Manager">Mission Manager</option>
+                <option value="Pilot">Pilot</option>
+                <option value="GCS Operator">GCS Operator</option>
+                <option value="Teknisi">Teknisi</option>
+                <option value="Guest">Guest</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId="formNIK" className="mt-3">
+              <Form.Label>NIK</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Masukkan NIK"
+                name="nik"
+                value={formData.nik}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formTanggalLahir" className="mt-3">
+              <Form.Label>Tanggal Lahir</Form.Label>
+              <Form.Control
+                type="date"
+                name="tanggal_lahir"
+                value={formData.tanggal_lahir}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formTelpon" className="mt-3">
+              <Form.Label>No. Telpon</Form.Label>
+              <Form.Control
+                type="tel"
+                placeholder="Masukkan no. telpon"
+                name="nomor_telepon"
+                value={formData.nomor_telepon}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formFoto" className="mt-3">
+              <Form.Label>Upload Foto operator</Form.Label>
+              <Form.Control
+                type="file"
+                name="photo_profile"
+                multiple
+                onChange={handleFileChange}
+              />
+              {photoError && (
+                <div className="text-danger mt-2">{photoError}</div>
+              )}
+            </Form.Group>
+
+            <div className="mt-3">
+              {formData.photo_profile && (
+                <div className="mt-4">
+                  <img
+                    src={formData.photo_profile} // Gunakan URL objek untuk menampilkan gambar
+                    alt="Foto Profil"
+                    className="img-fluid"
+                    style={{ maxWidth: "350px", margin: "10px" }}
+                  />
+                  <Button
+                    variant="danger"
+                    onClick={() => handleDeletePhoto()}
+                    className="ms-2"
+                  >
+                    Hapus
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <Form.Group controlId="formStatus" className="mt-3">
+              <Form.Label>Status</Form.Label>
+              <Form.Control
+                as="select"
+                name="status"
+                value={formData.status ? "true" : "false"}
+                onChange={handleStatusChange}
+              >
+                <option value="true">Aktif</option>
+                <option value="false">Nonaktif</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Button variant="primary" type="submit" className="mt-4">
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
 
       {/* Modal for logout confirmation */}
       {showLogoutModal &&
