@@ -40,7 +40,7 @@ const getMisiById = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/missions/${uuid}`, {
+    const response = await api.get(`/mission/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -61,7 +61,7 @@ const addMisi = async (formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/missions', formData, {
+    const response = await api.post('/mission', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -83,7 +83,7 @@ const updateMisi = async (uuid, formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.patch(`/missions/${uuid}`, formData, {
+    const response = await api.patch(`/mission/${uuid}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -105,7 +105,7 @@ const searchMisi = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/search-mission', {
+    const response = await api.get('/missions/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -127,7 +127,7 @@ const deleteMisi = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/missions/${uuid}`, {
+    const response = await api.delete(`/mission/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -147,7 +147,7 @@ const getDokumentasi = async () => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/dokumentasi', {
+    const response = await api.get('/documentations', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -160,14 +160,14 @@ const getDokumentasi = async () => {
   }
 };
 
-const addDokumentasi = async (formData) => {
+const addDokumentasi = async (formData, uuid) => {
   try {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/dokumentasi', formData, {
+    const response = await api.post(`/documentation/${uuid}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -188,7 +188,7 @@ const downloadDokumentasi = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/dokumentasi-download/${uuid}`, {
+    const response = await api.get(`/documentation/download/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -208,7 +208,7 @@ const deleteDokumentasi = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/dokumentasi/${uuid}`, {
+    const response = await api.delete(`/documentation/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -228,7 +228,7 @@ const updateMissionStatus = async (uuid, status) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.patch(`/mission-confirm/${uuid}`, status, {
+    const response = await api.patch(`/mission/confirm/${uuid}`, status, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

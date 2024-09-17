@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { FaEdit, FaPlus } from "react-icons/fa";
+import { FaEdit, FaPlus, FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbListDetails } from "react-icons/tb";
 import Button from "react-bootstrap/Button";
@@ -71,11 +71,13 @@ const Misi = () => {
             label: (
               <div>
                 <div>{wahana.nama_wahana}</div>
-                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>{wahana.tipe}</div>
+                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>
+                  {wahana.tipe}
+                </div>
               </div>
             ),
             nama_wahana: wahana.nama_wahana.toLowerCase(),
-            tipe: wahana.tipe.toLowerCase()
+            tipe: wahana.tipe.toLowerCase(),
           }));
           setWahanaOptions(options);
         }
@@ -90,7 +92,8 @@ const Misi = () => {
   const customFilterOptionWahana = (option, searchText) => {
     const searchTerm = searchText.toLowerCase();
     return (
-      option.data.nama_wahana.includes(searchTerm) || option.data.tipe.includes(searchTerm)
+      option.data.nama_wahana.includes(searchTerm) ||
+      option.data.tipe.includes(searchTerm)
     );
   };
 
@@ -114,11 +117,13 @@ const Misi = () => {
             label: (
               <div>
                 <div>{komponen.nama_komponen}</div>
-                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>{komponen.kategori}</div>
+                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>
+                  {komponen.kategori}
+                </div>
               </div>
             ),
             nama_komponen: komponen.nama_komponen.toLowerCase(),
-            kategori: komponen.kategori.toLowerCase()
+            kategori: komponen.kategori.toLowerCase(),
           }));
           setKomponenOptions(options);
         }
@@ -133,7 +138,8 @@ const Misi = () => {
   const customFilterOptionKomponen = (option, searchText) => {
     const searchTerm = searchText.toLowerCase();
     return (
-      option.data.nama_komponen.includes(searchTerm) || option.data.kategori.includes(searchTerm)
+      option.data.nama_komponen.includes(searchTerm) ||
+      option.data.kategori.includes(searchTerm)
     );
   };
 
@@ -157,11 +163,13 @@ const Misi = () => {
             label: (
               <div>
                 <div>{user.name}</div>
-                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>{user.role}</div>
+                <div style={{ fontSize: "0.8rem", color: "#6c757d" }}>
+                  {user.role}
+                </div>
               </div>
             ),
             name: user.name.toLowerCase(),
-            role: user.role.toLowerCase()
+            role: user.role.toLowerCase(),
           }));
           setUserOptions(options);
         }
@@ -176,7 +184,8 @@ const Misi = () => {
   const customFilterOptionUser = (option, searchText) => {
     const searchTerm = searchText.toLowerCase();
     return (
-      option.data.name.includes(searchTerm) || option.data.role.includes(searchTerm)
+      option.data.name.includes(searchTerm) ||
+      option.data.role.includes(searchTerm)
     );
   };
 
@@ -295,19 +304,19 @@ const Misi = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const creatorUuid = localStorage.getItem("userUUID");
-  if (!creatorUuid) {
-    console.error("creatorUuid tidak ditemukan di localStorage");
-    return;
-  }
-  
+    if (!creatorUuid) {
+      console.error("creatorUuid tidak ditemukan di localStorage");
+      return;
+    }
+
     // Buat objek data yang akan dikirim
     const dataToSubmit = {
       ...formData,
       creatorUuid,
     };
-  
+
     try {
       if (isUpdate) {
         const response = await misiService.updateMisi(misiId, dataToSubmit);
@@ -318,7 +327,7 @@ const Misi = () => {
         console.log(response.msg, response);
         setShowSuccessAdd(true);
       }
-  
+
       const updatedResponse = await misiService.getMisi();
       if (
         typeof updatedResponse === "object" &&
@@ -329,7 +338,7 @@ const Misi = () => {
       } else {
         console.error("Invalid response format");
       }
-  
+
       handleClose();
     } catch (error) {
       console.error(
@@ -340,7 +349,6 @@ const Misi = () => {
       );
     }
   };
-  
 
   const handleDeleteConfirm = async () => {
     try {
@@ -479,6 +487,7 @@ const Misi = () => {
                     name="judul_misi"
                     value={formData.judul_misi}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -490,6 +499,7 @@ const Misi = () => {
                     name="deskripsi_misi"
                     value={formData.deskripsi_misi}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -500,6 +510,7 @@ const Misi = () => {
                     name="kategori"
                     value={formData.kategori}
                     onChange={handleInputChange}
+                    required
                   >
                     <option value="">Pilih kategori...</option>
                     <option value="Pemetaan">Pemetaan</option>
@@ -525,26 +536,6 @@ const Misi = () => {
                 </Form.Group>
               </Tab>
 
-              {/* <Tab eventKey="gcs" title="GCS">
-              <Form.Group controlId="formWahana">
-                  <Form.Label>GCS Operator</Form.Label>
-                  <Select
-                    isMulti={false} // Ubah menjadi false agar hanya bisa memilih satu wahana
-                    placeholder="Pilih GCS Operator"
-                    name="userUuids"
-                    options={userOptions}
-                    className="basic-single-select" // Ubah className jika perlu
-                    classNamePrefix="select"
-                    onChange={(selectedOption) =>
-                      handleUserSelectChange(selectedOption, "user")
-                    }
-                    value={userOptions.find(
-                      (option) => option.value === formData.userUuids
-                    )} // Menampilkan wahana yang dipilih
-                  />
-                </Form.Group>
-              </Tab> */}
-
               <Tab eventKey="radio" title="Radio">
                 <Form.Group controlId="formTelemetry">
                   <Form.Label>Telemetry</Form.Label>
@@ -553,6 +544,7 @@ const Misi = () => {
                     name="telemetry"
                     value={formData.telemetry}
                     onChange={handleInputChange}
+                    required
                   >
                     <option value="">Pilih telemetry...</option>
                     <option value="net1">Net ID 1</option>
@@ -567,6 +559,7 @@ const Misi = () => {
                     name="remote"
                     value={formData.remote}
                     onChange={handleInputChange}
+                    required
                   >
                     <option value="">Pilih remote control...</option>
                     <option value="2.4ghz">2.4 GHz</option>
@@ -581,6 +574,7 @@ const Misi = () => {
                     name="video_sender"
                     value={formData.video_sender}
                     onChange={handleInputChange}
+                    required
                   >
                     <option value="">Pilih video sender...</option>
                     <option value="2.4ghz">2.4 GHz</option>
@@ -660,12 +654,18 @@ const Misi = () => {
       {ReactDOM.createPortal(
         showSuccessDelete && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
-              <p className="mb-4">Misi telah berhasil dihapus.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data wahana telah berhasil dihapus.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessDelete(false)}
                 >
                   Oke
@@ -680,14 +680,18 @@ const Misi = () => {
       {ReactDOM.createPortal(
         showSuccessAdd && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Tambah Data
-              </h2>
-              <p className="mb-4">Data Misi telah berhasil ditambahkan.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data wahana telah berhasil ditambahkan.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessAdd(false)}
                 >
                   Oke
@@ -702,14 +706,18 @@ const Misi = () => {
       {ReactDOM.createPortal(
         showSuccessUpdate && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Update Data
-              </h2>
-              <p className="mb-4">Data Misi telah berhasil diperbarui.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data wahana telah berhasil diperbarui.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessUpdate(false)}
                 >
                   Oke

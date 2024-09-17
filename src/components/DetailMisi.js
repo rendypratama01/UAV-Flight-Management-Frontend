@@ -5,16 +5,17 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { useParams } from "react-router-dom";
-import PenerbanganMisi from "./PenerbanganMisi";
 import misiService from "../services/misi.service";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import ReactDOM from "react-dom";
-import { FaTrashAlt, FaDownload } from "react-icons/fa";
+import { FaTrashAlt, FaDownload, FaCheckCircle } from "react-icons/fa";
+import { penerbanganPath } from "../routes";
 
 const DetailMisi = () => {
   const { uuid } = useParams(); // Get the uuid from URL parameters
   const [missionDetails, setMissionDetails] = useState(null);
+  const [flightDetails, setFlightDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -28,13 +29,18 @@ const DetailMisi = () => {
   const [deletePhotoUuid, setDeletePhotoUuid] = useState(null);
   const [showConfirmDeletePhoto, setShowConfirmDeletePhoto] = useState(false);
   const [showSuccessDelete, setShowSuccessDelete] = useState(false);
+  const [downloadPhotoUuid, setDownloadPhotoUuid] = useState(null);
+  const [showConfirmDownload, setShowConfirmDownload] = useState(false);
 
   useEffect(() => {
+    sessionStorage.setItem("misiUUID", uuid);
+
     const fetchMissionDetails = async () => {
       try {
         const data = await misiService.getMisiById(uuid);
         console.log(data); // Logging data for debugging
         setMissionDetails(data.mission);
+        setFlightDetails(data.penerbangan);
         setDokumenFotos(data.mission.dokumentasi_misis); // Set documentation photos
       } catch (err) {
         setError(err.message);
@@ -96,10 +102,9 @@ const DetailMisi = () => {
     formData.photos.forEach((file) => {
       dataToSubmit.append("photos", file);
     });
-    dataToSubmit.append("misiUuid", uuid);
 
     try {
-      const response = await misiService.addDokumentasi(dataToSubmit);
+      const response = await misiService.addDokumentasi(dataToSubmit, uuid);
       console.log(response.msg, response);
 
       // Display success modal
@@ -141,6 +146,37 @@ const DetailMisi = () => {
     }
   };
 
+  const handleDownload = (uuid) => {
+    setDownloadPhotoUuid(uuid);
+    setShowConfirmDownload(true);
+  };
+
+  const handleConfirmDownload = async () => {
+    try {
+      const photo = dokumenFotos.find((foto) => foto.uuid === downloadPhotoUuid);
+      if (photo && photo.foto_urls) {
+        // Mendapatkan data gambar dari URL
+        const response = await fetch(photo.foto_urls);
+        
+        if (response.ok) {
+          const blob = await response.blob();
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `photo_${downloadPhotoUuid}.jpeg`; // Atur ekstensi file sesuai kebutuhan
+          link.click();
+          // Cleanup
+          window.URL.revokeObjectURL(link.href);
+        } else {
+          throw new Error('Gagal mengunduh gambar.');
+        }
+      }
+    } catch (error) {
+      console.error("Error downloading photo:", error);
+    } finally {
+      setShowConfirmDownload(false);
+    }
+  };
+
   return (
     <div className="ml-cl7 mr-cr1">
       <h3 className="text-3xl text-new-300 pt-10">
@@ -155,7 +191,7 @@ const DetailMisi = () => {
                 <span className="font-bold w-36">Status</span>
                 <span className="w-1 mx-1">:</span>
                 <span className="flex-1 text-left">
-                  {missionDetails.status ? "Kelas Abangkuh" : "Sabar Bos"}
+                  {missionDetails.status ? "Selesai" : "Proses"}
                 </span>
               </div>
               <div className="flex mb-2">
@@ -245,7 +281,26 @@ const DetailMisi = () => {
           </Tab>
 
           <Tab eventKey="detail-penerbangan" title="Detail Penerbangan">
-            <PenerbanganMisi />
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {flightDetails.map((flight) => (
+                <a
+                  key={flight.uuid}
+                  href={`${penerbanganPath}/${flight.uuid}`}
+                  className="no-underline hover:no-underline text-inherit"
+                >
+                  <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
+                    <h4 className="text-xl font-bold mb-2">
+                      Durasi: {flight.durasi} menit
+                    </h4>
+                    <p className="text-sm mb-1">
+                      Status Penerbangan:{" "}
+                      {flight.status_penerbangan ? "Selesai" : "Proses"}
+                    </p>
+                    <p className="text-sm">Mulai: {flight.mulai}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
           </Tab>
 
           <Tab eventKey="dokumentasi" title="Dokumentasi">
@@ -280,7 +335,10 @@ const DetailMisi = () => {
                               handleDeletePhotoDokumentasi(foto.uuid)
                             }
                           />
-                          <FaDownload className="text-blue-500 cursor-pointer h-5 w-5" />
+                          <FaDownload
+                            className="text-blue-500 cursor-pointer h-5 w-5"
+                            onClick={() => handleDownload(foto.uuid)}
+                          />
                         </div>
                       </div>
                     ))
@@ -348,6 +406,36 @@ const DetailMisi = () => {
         </Modal>
 
         {ReactDOM.createPortal(
+          showConfirmDownload && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+                <h2 className="text-lg font-semibold mb-4">
+                  Konfirmasi Download
+                </h2>
+                <p className="mb-4">
+                  Apakah Anda ingin download foto ini?
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                    onClick={() => setShowConfirmDownload(false)}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={handleConfirmDownload}
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          ),
+          document.body
+        )}
+
+        {ReactDOM.createPortal(
           showConfirmDeletePhoto && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white p-8 rounded-lg shadow-lg w-96">
@@ -380,15 +468,21 @@ const DetailMisi = () => {
         {ReactDOM.createPortal(
           showSuccessDelete && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
-                <p className="mb-4">Foto dokumentasi telah berhasil dihapus.</p>
-                <div className="flex justify-end gap-4">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+                <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+                {/* Ikon besar di tengah atas */}
+                <div className="mt-12 text-center">
+                  <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                  <p className="text-gray-600 mb-6">
+                    Foto dokumentasi telah berhasil dihapus.
+                  </p>
+                </div>
+                <div className="flex justify-center">
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                     onClick={() => setShowSuccessDelete(false)}
                   >
-                    OK
+                    Oke
                   </button>
                 </div>
               </div>
@@ -400,19 +494,21 @@ const DetailMisi = () => {
         {ReactDOM.createPortal(
           showSuccessAdd && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-lg font-semibold mb-4">
-                  Berhasil Tambah Foto
-                </h2>
-                <p className="mb-4">
-                  Foto dokumentasi telah berhasil ditambahkan.
-                </p>
-                <div className="flex justify-end gap-4">
+              <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+                <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+                {/* Ikon besar di tengah atas */}
+                <div className="mt-12 text-center">
+                  <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                  <p className="text-gray-600 mb-6">
+                    Foto dokumentasi telah berhasil ditambahkan.
+                  </p>
+                </div>
+                <div className="flex justify-center">
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                     onClick={() => setShowSuccessAdd(false)}
                   >
-                    OK
+                    Oke
                   </button>
                 </div>
               </div>
