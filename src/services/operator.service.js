@@ -40,7 +40,7 @@ const getOperatorById = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/users/${uuid}`, {
+    const response = await api.get(`/user/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -61,7 +61,7 @@ const addOperator = async (formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/users', formData, {
+    const response = await api.post('/user', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -83,7 +83,7 @@ const updateOperator = async (uuid, formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.patch(`/users/${uuid}`, formData, {
+    const response = await api.patch(`/user/${uuid}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -105,7 +105,7 @@ const searchOperator = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/search-users', {
+    const response = await api.get('/users/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -127,7 +127,7 @@ const deleteOperator = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/users/${uuid}`, {
+    const response = await api.delete(`/user/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -147,7 +147,7 @@ const getOperatorPilotAndGCS = async () => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/users-pilot-gcs', {
+    const response = await api.get('/users/pilot-gcs', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

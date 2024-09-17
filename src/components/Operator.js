@@ -21,6 +21,7 @@ function Operator() {
     tanggal_lahir: "",
     nomor_telepon: "",
     photo_profile: "",
+    status: false,
   });
 
   const [operatorData, setOperatorData] = useState([]);
@@ -113,6 +114,7 @@ function Operator() {
               tanggal_lahir: response.user.tanggal_lahir,
               nomor_telepon: response.user.nomor_telepon,
               photo_profile: response.user.photo_profile,
+              status: response.user.status || false,
             });
             handleShow();
           } else {
@@ -142,6 +144,7 @@ function Operator() {
       tanggal_lahir: "",
       nomor_telepon: "",
       photo_profile: "",
+      status: false,
     });
     setPhotoError("");
   };
@@ -150,6 +153,13 @@ function Operator() {
     setFormData({
       ...formData,
       photo_profile: "", // Set ke string kosong jika tidak ada foto
+    });
+  };
+
+  const handleStatusChange = (e) => {
+    setFormData({
+      ...formData,
+      status: e.target.value === "true",
     });
   };
 
@@ -440,7 +450,6 @@ function Operator() {
                 name="photo_profile"
                 multiple
                 onChange={handleFileChange}
-                required
               />
               {photoError && (
                 <div className="text-danger mt-2">{photoError}</div>
@@ -466,6 +475,21 @@ function Operator() {
                 </div>
               )}
             </div>
+
+            {isUpdate && (
+              <Form.Group controlId="formStatus" className="mt-3">
+                <Form.Label>Status</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="status"
+                  value={formData.status ? "true" : "false"}
+                  onChange={handleStatusChange}
+                >
+                  <option value="true">Aktif</option>
+                  <option value="false">Nonaktif</option>
+                </Form.Control>
+              </Form.Group>
+            )}
 
             <Button variant="primary" type="submit" className="mt-4">
               {isUpdate ? "Update" : "Submit"}
