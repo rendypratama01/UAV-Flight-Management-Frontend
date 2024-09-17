@@ -17,7 +17,7 @@ import MaintenanceKomponenPage from "./pages/MaintenanceKomponenPage";
 import KomponenPage from "./pages/KomponenPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
+import ProtectedRoute from "./components/ProtectedRoute";
 import { rootPath, dashboardPath, misiPath, operatorPath, wahanaPath, maintenanceWahanaPath, maintenanceKomponenPath, komponenPath, detailMisiPath, detailOperatorPath, detailWahanaPath, detailMaintenanceWahanaPath, detailMaintenanceKomponenPath, detailKomponenPath, penerbanganPath, loginPath, profilePath } from "./routes";
 
 function App() {
