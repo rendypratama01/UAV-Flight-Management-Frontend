@@ -14,3 +14,4 @@ export const detailWahanaPath = "/detail-wahana/:uuid";
 export const detailMaintenanceWahanaPath = "/detail-perbaikan-wahana/:uuid";
 export const detailMaintenanceKomponenPath = "/detail-perbaikan-komponen/:uuid";
 export const detailKomponenPath = "/detail-komponen/:uuid";
+export const penerbanganPath = "/penerbangan/:uuid";

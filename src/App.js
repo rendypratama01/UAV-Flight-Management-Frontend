@@ -8,6 +8,7 @@ import DetailWahanaPage from "./pages/DetailWahanaPage";
 import DetailMaintenanceWahanaPage from "./pages/DetailMaintenanceWahanaPage";
 import DetailMaintenanceKomponenPage from "./pages/DetailMaintenanceKomponenPage";
 import DetailKomponenPage from "./pages/DetailKomponenPage";
+import PenerbanganPage from "./pages/PenerbanganPage";
 import MisiPage from "./pages/MisiPage";
 import OperatorPage from "./pages/OperatorPage";
 import WahanaPage from "./pages/WahanaPage";
@@ -17,7 +18,7 @@ import KomponenPage from "./pages/KomponenPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import the ProtectedRoute component
-import { rootPath, dashboardPath, misiPath, operatorPath, wahanaPath, maintenanceWahanaPath, maintenanceKomponenPath, komponenPath, detailMisiPath, detailOperatorPath, detailWahanaPath, detailMaintenanceWahanaPath, detailMaintenanceKomponenPath, detailKomponenPath, loginPath, profilePath } from "./routes";
+import { rootPath, dashboardPath, misiPath, operatorPath, wahanaPath, maintenanceWahanaPath, maintenanceKomponenPath, komponenPath, detailMisiPath, detailOperatorPath, detailWahanaPath, detailMaintenanceWahanaPath, detailMaintenanceKomponenPath, detailKomponenPath, penerbanganPath, loginPath, profilePath } from "./routes";
 
 function App() {
   const location = useLocation();
@@ -44,6 +45,7 @@ function App() {
           <Route path={`${detailMaintenanceWahanaPath}/:uuid`} element={<ProtectedRoute element={DetailMaintenanceWahanaPage} />} />
           <Route path={`${detailMaintenanceKomponenPath}/:uuid`} element={<ProtectedRoute element={DetailMaintenanceKomponenPage} />} />
           <Route path={`${detailKomponenPath}/:uuid`} element={<ProtectedRoute element={DetailKomponenPage} />} />
+          <Route path={`${penerbanganPath}/:uuid`} element={<ProtectedRoute element={PenerbanganPage} />} />
         </Routes>
       </main>
     </div>
