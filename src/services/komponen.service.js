@@ -38,7 +38,7 @@ const getKomponenById = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/components/${uuid}`, {
+    const response = await api.get(`/component/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -58,7 +58,7 @@ const addKomponen = async (formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/components', formData, {
+    const response = await api.post('/component', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -80,7 +80,7 @@ const updateKomponen = async (uuid, formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.patch(`/components/${uuid}`, formData, {
+    const response = await api.patch(`/component/${uuid}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -102,7 +102,7 @@ const searchKomponen = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/search-components', {
+    const response = await api.get('/components/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -123,7 +123,7 @@ const deleteKomponen = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/components/${uuid}`, {
+    const response = await api.delete(`/component/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

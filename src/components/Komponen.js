@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { FaEdit, FaPlus } from "react-icons/fa";
+import { FaEdit, FaPlus, FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbListDetails } from "react-icons/tb";
 import Button from "react-bootstrap/Button";
@@ -20,6 +20,7 @@ function Komponen() {
     tempat_pembelian: "",
     harga: "",
     photos: [],
+    status: false,
   });
   const [komponenData, setKomponenData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
@@ -35,7 +36,7 @@ function Komponen() {
     const fetchKomponen = async () => {
       try {
         const response = await komponenService.getKomponen();
-        console.log(response?.msg, response);
+        console.log(response.msg);
 
         if (
           typeof response === "object" &&
@@ -101,7 +102,11 @@ function Komponen() {
               kategori: response.komponen.kategori,
               tempat_pembelian: response.komponen.tempat_pembelian,
               harga: response.komponen.harga,
-              photos: response.komponen.photos || [],
+              photos:
+                response.komponen.foto_komponens.map(
+                  (photo) => photo.foto_urls
+                ) || [],
+              status: response.komponen.status || false,
             });
             handleShow();
           } else {
@@ -130,6 +135,7 @@ function Komponen() {
       tempat_pembelian: "",
       harga: "",
       photos: [],
+      status: false,
     });
     setPhotoError("");
   };
@@ -147,6 +153,13 @@ function Komponen() {
     setFormData({
       ...formData,
       [name]: value,
+    });
+  };
+
+  const handleStatusChange = (e) => {
+    setFormData({
+      ...formData,
+      status: e.target.value === "true",
     });
   };
 
@@ -359,6 +372,7 @@ function Komponen() {
                 name="nama"
                 value={formData.nama}
                 onChange={handleInputChange}
+                required
               />
             </Form.Group>
 
@@ -370,6 +384,7 @@ function Komponen() {
                 name="deskripsi"
                 value={formData.deskripsi}
                 onChange={handleInputChange}
+                required
               />
             </Form.Group>
 
@@ -380,10 +395,11 @@ function Komponen() {
                 name="kategori"
                 value={formData.kategori}
                 onChange={handleInputChange}
+                required
               >
-              <option value="">Pilih kategori...</option>
-              <option value="Kamera">Kamera</option>
-              <option value="Sensor">Sensor</option>
+                <option value="">Pilih kategori...</option>
+                <option value="Kamera">Kamera</option>
+                <option value="Sensor">Sensor</option>
               </Form.Control>
             </Form.Group>
 
@@ -395,6 +411,7 @@ function Komponen() {
                 name="harga"
                 value={formData.harga}
                 onChange={handleInputChange}
+                required
               />
             </Form.Group>
 
@@ -406,6 +423,7 @@ function Komponen() {
                 name="tempat_pembelian"
                 value={formData.tempat_pembelian}
                 onChange={handleInputChange}
+                required
               />
             </Form.Group>
 
@@ -425,11 +443,12 @@ function Komponen() {
             <div className="mt-3">
               {formData.photos && formData.photos.length > 0 && (
                 <div className="mt-4">
-                  {formData.photos.map((file, index) => (
+                  {formData.photos.map((photoUrl, index) => (
                     <div key={index} className="mt-4 d-flex align-items-center">
                       <img
-                        src={URL.createObjectURL(file)}
-                        alt={`Foto ${index}`}
+                        key={index}
+                        src={photoUrl}
+                        alt={`Komponen Foto ${index + 1}`}
                         className="img-fluid"
                         style={{ maxWidth: "350px", margin: "10px" }}
                       />
@@ -445,6 +464,21 @@ function Komponen() {
                 </div>
               )}
             </div>
+
+            {isUpdate && (
+              <Form.Group controlId="formStatus" className="mt-3">
+                <Form.Label>Status</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="status"
+                  value={formData.status ? "true" : "false"}
+                  onChange={handleStatusChange}
+                >
+                  <option value="true">Aktif</option>
+                  <option value="false">Nonaktif</option>
+                </Form.Control>
+              </Form.Group>
+            )}
 
             <Button variant="primary" type="submit" className="mt-4">
               {isUpdate ? "Update" : "Submit"}
@@ -484,12 +518,18 @@ function Komponen() {
       {ReactDOM.createPortal(
         showSuccessDelete && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
-              <p className="mb-4">komponen telah berhasil dihapus.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data komponen telah berhasil dihapus.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessDelete(false)}
                 >
                   Oke
@@ -504,14 +544,18 @@ function Komponen() {
       {ReactDOM.createPortal(
         showSuccessAdd && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Tambah Data
-              </h2>
-              <p className="mb-4">Data komponen telah berhasil ditambahkan.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data komponen telah berhasil ditambahkan.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessAdd(false)}
                 >
                   Oke
@@ -526,14 +570,18 @@ function Komponen() {
       {ReactDOM.createPortal(
         showSuccessUpdate && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Update Data
-              </h2>
-              <p className="mb-4">Data komponen telah berhasil diperbarui.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data komponen telah berhasil diperbarui.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessUpdate(false)}
                 >
                   Oke
