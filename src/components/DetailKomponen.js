@@ -14,8 +14,9 @@ import {
   FaCalendarAlt,
   FaClock,
   FaCheckCircle,
-  FaTimesCircle
+  FaTimesCircle,
 } from "react-icons/fa";
+import { detailMaintenanceKomponenPath, detailMisiPath } from "../routes";
 
 const DetailKomponen = () => {
   const { uuid } = useParams(); // Get the uuid from URL parameters
@@ -44,11 +45,11 @@ const DetailKomponen = () => {
   if (!komponenDetails) return <p>No Komponen details available.</p>;
 
   const truncateTextByChar = (text, charLimit) => {
-    if (!text) return '';
+    if (!text) return "";
     if (text.length <= charLimit) return text;
-    return text.slice(0, charLimit) + '...';
+    return text.slice(0, charLimit) + "...";
   };
-  
+
   return (
     <div className="ml-cl7 mr-cr1">
       <h3 className="text-3xl text-new-300 pt-10">
@@ -148,33 +149,47 @@ const DetailKomponen = () => {
           <Tab eventKey="misi" title="Misi">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {komponenDetails.missions.map((mission) => (
-                <div
+                <a
                   key={mission.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMisiPath}/${mission.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                  {truncateTextByChar(mission.judul_misi, 20)}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
-                  <p className="text-sm">Tanggal: {mission.createdAt}</p>
-                </div>
+                  <div
+                    key={mission.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {truncateTextByChar(mission.judul_misi, 20)}
+                    </h4>
+                    <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
+                    <p className="text-sm">Tanggal: {mission.createdAt}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </Tab>
           <Tab eventKey="perbaikan" title="Perbaikan">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {komponenDetails.komponen_perbaikanKomponen.map((perbaikan) => (
-                <div
+                <a
                   key={perbaikan.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMaintenanceKomponenPath}/${perbaikan.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                    {perbaikan.judul_perbaikan}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {perbaikan.kategori}</p>
-                  <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
-                  <p className="text-sm">Biaya: {perbaikan.biaya}</p>
-                </div>
+                  <div
+                    key={perbaikan.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {perbaikan.judul_perbaikan}
+                    </h4>
+                    <p className="text-sm mb-1">
+                      Kategori: {perbaikan.kategori}
+                    </p>
+                    <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
+                    <p className="text-sm">Biaya: {perbaikan.biaya}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </Tab>

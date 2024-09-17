@@ -7,6 +7,11 @@ import operatorService from "../services/operator.service";
 import authService from "../services/auth.service"; // Import authService
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { Modal, Button, Form } from "react-bootstrap";
+import {
+  detailMaintenanceKomponenPath,
+  detailMaintenanceWahanaPath,
+  detailMisiPath,
+} from "../routes";
 
 function Profile() {
   const [activeTab, setActiveTab] = useState("Informasi");
@@ -331,16 +336,22 @@ function Profile() {
           <div className="w-full max-w-xl">
             <div className="grid grid-cols-1 gap-6">
               {userData.missions.map((mission) => (
-                <div
+                <a
                   key={mission.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMisiPath}/${mission.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                    {truncateTextByChar(mission.judul_misi, 20)}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
-                  <p className="text-sm">Tanggal: {mission.createdAt}</p>
-                </div>
+                  <div
+                    key={mission.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {truncateTextByChar(mission.judul_misi, 20)}
+                    </h4>
+                    <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
+                    <p className="text-sm">Tanggal: {mission.createdAt}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
@@ -350,17 +361,25 @@ function Profile() {
           <div className="w-full max-w-xl">
             <div className="grid grid-cols-1 gap-6">
               {userData.user_perbaikanWahana.map((perbaikan) => (
-                <div
+                <a
                   key={perbaikan.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMaintenanceWahanaPath}/${perbaikan.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                    {perbaikan.judul_perbaikan}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {perbaikan.kategori}</p>
-                  <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
-                  <p className="text-sm">Biaya: {perbaikan.biaya}</p>
-                </div>
+                  <div
+                    key={perbaikan.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {perbaikan.judul_perbaikan}
+                    </h4>
+                    <p className="text-sm mb-1">
+                      Kategori: {perbaikan.kategori}
+                    </p>
+                    <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
+                    <p className="text-sm">Biaya: {perbaikan.biaya}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
@@ -370,17 +389,25 @@ function Profile() {
           <div className="w-full max-w-xl">
             <div className="grid grid-cols-1 gap-6">
               {userData.user_perbaikanKomponen.map((perbaikan) => (
-                <div
+                <a
                   key={perbaikan.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMaintenanceKomponenPath}/${perbaikan.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                    {perbaikan.judul_perbaikan}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {perbaikan.kategori}</p>
-                  <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
-                  <p className="text-sm">Biaya: {perbaikan.biaya}</p>
-                </div>
+                  <div
+                    key={perbaikan.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {perbaikan.judul_perbaikan}
+                    </h4>
+                    <p className="text-sm mb-1">
+                      Kategori: {perbaikan.kategori}
+                    </p>
+                    <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
+                    <p className="text-sm">Biaya: {perbaikan.biaya}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </div>

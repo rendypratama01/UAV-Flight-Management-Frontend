@@ -16,7 +16,12 @@ import {
   FaCalendarCheck,
 } from "react-icons/fa";
 import Zoom from "react-medium-image-zoom";
-import "react-medium-image-zoom/dist/styles.css"; // Import the styles for zoom
+import "react-medium-image-zoom/dist/styles.css";
+import {
+  detailMaintenanceKomponenPath,
+  detailMaintenanceWahanaPath,
+  detailMisiPath,
+} from "../routes";
 
 const DetailOperator = () => {
   // Sample data for operator details (replace with actual data or props)
@@ -151,6 +156,11 @@ const DetailOperator = () => {
           <Tab eventKey="misi" title="Misi">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {operatorDetails.missions.map((mission) => (
+                <a
+                key={mission.id}
+                href={`${detailMisiPath}/${mission.uuid}`} // Adjust path as needed
+                className="no-underline hover:no-underline text-inherit"
+              >
                 <div
                   key={mission.id}
                   className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
@@ -161,6 +171,7 @@ const DetailOperator = () => {
                   <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
                   <p className="text-sm">Tanggal: {mission.createdAt}</p>
                 </div>
+                </a>
               ))}
             </div>
           </Tab>
@@ -168,6 +179,11 @@ const DetailOperator = () => {
           <Tab eventKey="perbaikanWahana" title="Perbaikan Wahana">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {operatorDetails.user_perbaikanWahana.map((perbaikan) => (
+                <a
+                key={perbaikan.id}
+                href={`${detailMaintenanceWahanaPath}/${perbaikan.uuid}`} // Adjust path as needed
+                className="no-underline hover:no-underline text-inherit"
+              >
                 <div
                   key={perbaikan.id}
                   className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
@@ -179,6 +195,7 @@ const DetailOperator = () => {
                   <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
                   <p className="text-sm">Biaya: {perbaikan.biaya}</p>
                 </div>
+                </a>
               ))}
             </div>
           </Tab>
@@ -186,6 +203,11 @@ const DetailOperator = () => {
           <Tab eventKey="perbaikanKomponen" title="Perbaikan Komponen">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {operatorDetails.user_perbaikanKomponen.map((perbaikan) => (
+                <a
+                key={perbaikan.id}
+                href={`${detailMaintenanceKomponenPath}/${perbaikan.uuid}`} // Adjust path as needed
+                className="no-underline hover:no-underline text-inherit"
+              >
                 <div
                   key={perbaikan.id}
                   className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
@@ -197,6 +219,7 @@ const DetailOperator = () => {
                   <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
                   <p className="text-sm">Biaya: {perbaikan.biaya}</p>
                 </div>
+                </a>
               ))}
             </div>
           </Tab>

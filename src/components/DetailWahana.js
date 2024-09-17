@@ -13,6 +13,7 @@ import {
   FaClock,
   FaListAlt,
 } from "react-icons/fa";
+import { detailMaintenanceWahanaPath, detailMisiPath } from "../routes";
 
 const DetailWahana = () => {
   const { uuid } = useParams(); // Get the uuid from URL parameters
@@ -159,7 +160,8 @@ const DetailWahana = () => {
 
                 <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
                   <span className="flex items-center font-bold text-blue-900 text-lg">
-                    <FaCalendarAlt className="mr-2" />Ditambahkan
+                    <FaCalendarAlt className="mr-2" />
+                    Ditambahkan
                   </span>
                   <span className="text-gray-900 text-xl">
                     {wahanaDetails.createdAt}
@@ -168,7 +170,8 @@ const DetailWahana = () => {
 
                 <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
                   <span className="flex items-center font-bold text-blue-900 text-lg">
-                    <FaClock className="mr-2" />Diperbarui
+                    <FaClock className="mr-2" />
+                    Diperbarui
                   </span>
                   <span className="text-gray-900 text-xl">
                     {wahanaDetails.updatedAt}
@@ -261,33 +264,47 @@ const DetailWahana = () => {
           <Tab eventKey="misi" title="Misi">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {wahanaDetails.missions.map((mission) => (
-                <div
+                <a
                   key={mission.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMisiPath}/${mission.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                    {truncateTextByChar(mission.judul_misi, 20)}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
-                  <p className="text-sm">Tanggal: {mission.createdAt}</p>
-                </div>
+                  <div
+                    key={mission.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {truncateTextByChar(mission.judul_misi, 20)}
+                    </h4>
+                    <p className="text-sm mb-1">Kategori: {mission.kategori}</p>
+                    <p className="text-sm">Tanggal: {mission.createdAt}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </Tab>
           <Tab eventKey="perbaikan" title="Perbaikan">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {wahanaDetails.wahana_perbaikanWahana.map((perbaikan) => (
-                <div
+                <a
                   key={perbaikan.id}
-                  className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  href={`${detailMaintenanceWahanaPath}/${perbaikan.uuid}`} // Adjust path as needed
+                  className="no-underline hover:no-underline text-inherit"
                 >
-                  <h4 className="text-xl font-bold mb-2">
-                    {perbaikan.judul_perbaikan}
-                  </h4>
-                  <p className="text-sm mb-1">Kategori: {perbaikan.kategori}</p>
-                  <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
-                  <p className="text-sm">Biaya: {perbaikan.biaya}</p>
-                </div>
+                  <div
+                    key={perbaikan.id}
+                    className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer"
+                  >
+                    <h4 className="text-xl font-bold mb-2">
+                      {perbaikan.judul_perbaikan}
+                    </h4>
+                    <p className="text-sm mb-1">
+                      Kategori: {perbaikan.kategori}
+                    </p>
+                    <p className="text-sm">Tanggal: {perbaikan.createdAt}</p>
+                    <p className="text-sm">Biaya: {perbaikan.biaya}</p>
+                  </div>
+                </a>
               ))}
             </div>
           </Tab>
