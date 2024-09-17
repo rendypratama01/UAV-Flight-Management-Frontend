@@ -19,7 +19,7 @@ const getPerbaikanWahana = async () => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/perbaikan-wahana', {
+    const response = await api.get('/wahana-maintenances', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -40,7 +40,7 @@ const getPerbaikanWahanaById = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/perbaikan-wahana/${uuid}`, {
+    const response = await api.get(`/wahana-maintenance/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -61,7 +61,7 @@ const addPerbaikanWahana = async (formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/perbaikan-wahana', formData, {
+    const response = await api.post('/wahana-maintenance', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -83,7 +83,7 @@ const updatePerbaikanWahana = async (uuid, formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.patch(`/perbaikan-wahana/${uuid}`, formData, {
+    const response = await api.patch(`/wahana-maintenance/${uuid}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -105,7 +105,7 @@ const searchPerbaikanWahana = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/search-perbaikanWahana', {
+    const response = await api.get('/wahana-maintenances/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -127,7 +127,7 @@ const deletePerbaikanWahana = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/perbaikan-wahana/${uuid}`, {
+    const response = await api.delete(`/wahana-maintenance/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

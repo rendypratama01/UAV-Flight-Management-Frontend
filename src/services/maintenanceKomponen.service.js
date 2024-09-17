@@ -19,7 +19,7 @@ const getPerbaikanKomponen = async () => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/perbaikan-komponen', {
+    const response = await api.get('/component-maintenances', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -40,7 +40,7 @@ const getPerbaikanKomponenById = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get(`/perbaikan-komponen/${uuid}`, {
+    const response = await api.get(`/component-maintenance/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -61,7 +61,7 @@ const addPerbaikanKomponen = async (formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.post('/perbaikan-komponen', formData, {
+    const response = await api.post('/component-maintenance', formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -83,7 +83,7 @@ const updatePerbaikanKomponen = async (uuid, formData) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.patch(`/perbaikan-komponen/${uuid}`, formData, {
+    const response = await api.patch(`/component-maintenance/${uuid}`, formData, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -105,7 +105,7 @@ const searchPerbaikanKomponen = async (queryParams) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/search-perbaikanKomponen', {
+    const response = await api.get('/component-maintenances/search', {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -127,7 +127,7 @@ const deletePerbaikanKomponen = async (uuid) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.delete(`/perbaikan-komponen/${uuid}`, {
+    const response = await api.delete(`/component-maintenance/${uuid}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

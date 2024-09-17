@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { FaEdit, FaPlus } from "react-icons/fa";
+import { FaEdit, FaPlus, FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbListDetails } from "react-icons/tb";
 import Button from "react-bootstrap/Button";
@@ -99,7 +99,7 @@ function MaintenanceWahana() {
         // Extract id from wahana details and update formData
         setFormData((prevFormData) => ({
           ...prevFormData,
-          wahanaId: [response.wahana.id], // Store `id` instead of `uuid`
+          wahanaId: [response.wahana.uuid], // Store `id` instead of `uuid`
         }));
 
         // You can now use other details from response.wahana if needed
@@ -190,7 +190,7 @@ function MaintenanceWahana() {
               nama: response.perbaikan.nama_teknisi,
               tempat: response.perbaikan.tempat_perbaikan,
               biaya: response.perbaikan.biaya,
-              photos: response.perbaikan.photos || [],
+              photos: response.perbaikan.foto_perbaikan.map(photo => photo.foto_urls) || [],
             });
             handleShow();
           } else {
@@ -241,21 +241,16 @@ function MaintenanceWahana() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const userId = localStorage.getItem("userID");
-    console.log("userID from localStorage:", userId); // Tambahkan log ini
+    const userId = localStorage.getItem("userUUID");
+    console.log("userUUID from localStorage:", userId); // Tambahkan log ini
 
     if (!userId) {
-      console.error("userID tidak ditemukan di localStorage");
+      console.error("userUUID tidak ditemukan di localStorage");
       return;
     }
 
     // Buat FormData untuk data yang akan dikirim
     const dataToSubmit = new FormData();
-
-    // Tambahkan wahanaId ke dalam FormData jika ada
-    formData.wahanaId.forEach((id) => dataToSubmit.append("wahanaId", id));
-    dataToSubmit.append("userId", userId);
-    console.log("formData.wahanaId:", formData.wahanaId);
 
     // Tambahkan field lainnya ke dalam FormData
     Object.keys(formData).forEach((key) => {
@@ -265,6 +260,8 @@ function MaintenanceWahana() {
         dataToSubmit.append(key, formData[key]);
       }
     });
+
+    dataToSubmit.append("userId", userId);
 
     try {
       if (isUpdate) {
@@ -306,7 +303,9 @@ function MaintenanceWahana() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await perbaikanWahanaService.deletePerbaikanWahana(deletePerbaikanWahanaId);
+      await perbaikanWahanaService.deletePerbaikanWahana(
+        deletePerbaikanWahanaId
+      );
       setShowSuccessDelete(true);
 
       const updatedResponse = await perbaikanWahanaService.getPerbaikanWahana();
@@ -461,6 +460,7 @@ function MaintenanceWahana() {
                     name="judul"
                     value={formData.judul}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -472,6 +472,7 @@ function MaintenanceWahana() {
                     name="deskripsi"
                     value={formData.deskripsi}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -482,6 +483,7 @@ function MaintenanceWahana() {
                     name="kategori"
                     value={formData.kategori}
                     onChange={handleInputChange}
+                    required
                   >
                     <option value="">Pilih kategori...</option>
                     <option value="Airframe">Airframe</option>
@@ -497,6 +499,7 @@ function MaintenanceWahana() {
                     name="nama"
                     value={formData.nama}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -508,6 +511,7 @@ function MaintenanceWahana() {
                     name="tempat"
                     value={formData.tempat}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
 
@@ -519,6 +523,7 @@ function MaintenanceWahana() {
                     name="biaya"
                     value={formData.biaya}
                     onChange={handleInputChange}
+                    required
                   />
                 </Form.Group>
               </Tab>
@@ -540,14 +545,15 @@ function MaintenanceWahana() {
                 <div className="mt-3">
                   {formData.photos && formData.photos.length > 0 && (
                     <div className="mt-4">
-                      {formData.photos.map((file, index) => (
+                      {formData.photos.map((photoUrl, index) => (
                         <div
                           key={index}
                           className="mt-4 d-flex align-items-center"
                         >
                           <img
-                            src={URL.createObjectURL(file)}
-                            alt={`Foto ${index}`}
+                            key={index}
+                            src={photoUrl}
+                            alt={`Perbaikan Wahana Foto ${index + 1}`}
                             className="img-fluid"
                             style={{ maxWidth: "350px", margin: "10px" }}
                           />
@@ -604,12 +610,18 @@ function MaintenanceWahana() {
       {ReactDOM.createPortal(
         showSuccessDelete && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">Berhasil Dihapus</h2>
-              <p className="mb-4">Perbaikan wahana telah berhasil dihapus.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data perbaikan wahana telah berhasil dihapus.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessDelete(false)}
                 >
                   Oke
@@ -624,14 +636,18 @@ function MaintenanceWahana() {
       {ReactDOM.createPortal(
         showSuccessAdd && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Tambah Data
-              </h2>
-              <p className="mb-4">Data perbaikan wahana telah berhasil ditambahkan.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data perbaikan wahana telah berhasil ditambahkan.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessAdd(false)}
                 >
                   Oke
@@ -646,14 +662,18 @@ function MaintenanceWahana() {
       {ReactDOM.createPortal(
         showSuccessUpdate && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-lg font-semibold mb-4">
-                Berhasil Update Data
-              </h2>
-              <p className="mb-4">Data perbaikan wahana telah berhasil diperbarui.</p>
-              <div className="flex justify-end gap-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 relative">
+              <FaCheckCircle className="text-green-500 text-6xl absolute top-[-2.5rem] left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2" />{" "}
+              {/* Ikon besar di tengah atas */}
+              <div className="mt-12 text-center">
+                <h2 className="text-xl font-bold mb-2">Sukses</h2>
+                <p className="text-gray-600 mb-6">
+                  Data perbaikan wahana telah berhasil diperbarui.
+                </p>
+              </div>
+              <div className="flex justify-center">
                 <button
-                  className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => setShowSuccessUpdate(false)}
                 >
                   Oke
