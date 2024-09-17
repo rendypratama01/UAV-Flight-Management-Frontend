@@ -8,16 +8,14 @@ if (!API_URL) {
 
 const login = async (email, password) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, { email, password });
-    const { accessToken, uuid, id } = response.data; // Ambil ID dari response
+    const response = await axios.post(`${API_URL}/user/login`, { email, password });
+    const { accessToken, uuid, id, role } = response.data; // Ambil ID dari response
 
     // Save the token, UUID, and User ID in both localStorage and sessionStorage
     localStorage.setItem('authToken', accessToken);
     localStorage.setItem('userUUID', uuid);
-    localStorage.setItem('userID', id); // Simpan user ID
-    sessionStorage.setItem('authToken', accessToken);
-    sessionStorage.setItem('userUUID', uuid);
-    sessionStorage.setItem('userID', id); // Simpan user ID
+    localStorage.setItem('userID', id); 
+    localStorage.setItem('Role', role);
 
     return response.data;
   } catch (error) {
@@ -35,7 +33,7 @@ const logoutUser = async () => {
     }
 
     // Send DELETE request to /logout
-    const response = await axios.delete(`${API_URL}/logout`, {
+    const response = await axios.delete(`${API_URL}/user/logout`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -45,10 +43,7 @@ const logoutUser = async () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userUUID');
     localStorage.removeItem('userID');
-    sessionStorage.removeItem('authToken');
-    sessionStorage.removeItem('userUUID');
-    sessionStorage.removeItem('userID');
-
+    
     return response.data;
   } catch (error) {
     console.error('Logout error:', error.response ? error.response.data : error.message);
@@ -69,7 +64,7 @@ const changePassword = async (oldPassword, newPassword, confirmNewPassword) => {
     }
 
     const response = await axios.post(
-      `${API_URL}/change-password`,
+      `${API_URL}/user/change-password`,
       { oldPassword, newPassword, confirmNewPassword },
       {
         headers: {

@@ -201,6 +201,15 @@ function Wahana() {
     });
   };
 
+  const handleTypeChange = (e) => {
+    const newType = e.target.value;
+    setFormData({
+      ...formData,
+      tipe: newType,
+    });
+    setSelectedType(newType);
+  };
+
   const handleFileChange = (e) => {
     const { files } = e.target;
     const selectedFiles = Array.from(files);
@@ -214,15 +223,6 @@ function Wahana() {
       });
       setPhotoError("");
     }
-  };
-
-  const handleTypeChange = (e) => {
-    const newType = e.target.value;
-    setFormData({
-      ...formData,
-      tipe: newType,
-    });
-    setSelectedType(newType);
   };
 
   const handleSubmit = async (e) => {

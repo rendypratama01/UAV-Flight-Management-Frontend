@@ -20,7 +20,7 @@ const getAllData = async () => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/data', {
+    const response = await api.get('/datas', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -41,7 +41,7 @@ const getDataByCategory = async (category) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/data-category', {
+    const response = await api.get('/data/category', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -65,7 +65,7 @@ const getDataActivity = async (tahun) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/data-activity', {
+    const response = await api.get('/data/activity', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -89,7 +89,7 @@ const getDataResource = async (tahun) => {
       throw new Error('No auth token found. Please login.');
     }
 
-    const response = await api.get('/data-resource', {
+    const response = await api.get('/data/resource', {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

@@ -50,7 +50,7 @@ const Sidebar = () => {
   const handleDropdownToggle = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
-    <Card className="h-screen w-full max-w-[20rem] px-2 fixed shadow-xl shadow-blue-gray-900/5 bg-[#F1F2F7]">
+    <Card className="min-h-screen w-full max-w-[20rem] px-2 fixed shadow-xl shadow-blue-gray-900/5 bg-[#F1F2F7]">
       <div className="mb-2 flex items-center gap-4 p-4">
         <a href={rootPath}>
           <img src={logo} alt="brand" className="h-20 w-20" />
@@ -67,7 +67,7 @@ const Sidebar = () => {
         >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
-              <MdDashboard className="h-5 w-5" />
+              <MdDashboard className="h-5 w-5 text-blue-700" />
             </ListItemPrefix>
             Dashboard
           </ListItem>
@@ -79,7 +79,7 @@ const Sidebar = () => {
         >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
-              <FaTasks className="h-5 w-5" />
+              <FaTasks className="h-5 w-5 text-blue-700" />
             </ListItemPrefix>
             Misi
           </ListItem>
@@ -91,7 +91,7 @@ const Sidebar = () => {
         >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
-              <FaUserAlt className="h-5 w-5" />
+              <FaUserAlt className="h-5 w-5 text-blue-700" />
             </ListItemPrefix>
             Operator
           </ListItem>
@@ -103,7 +103,7 @@ const Sidebar = () => {
         >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
-              <TbDrone className="h-5 w-5" />
+              <TbDrone className="h-5 w-5 text-blue-700" />
             </ListItemPrefix>
             Wahana
           </ListItem>
@@ -115,7 +115,7 @@ const Sidebar = () => {
             className="w-full flex items-center pl-3 py-3 hover:bg-gray-200 rounded"
             onClick={handleDropdownToggle}
           >
-            <GrHostMaintenance className="h-5 w-5" />
+            <GrHostMaintenance className="h-5 w-5 text-blue-700" />
             <span className="pl-4">Perbaikan</span>
             <svg
               className={`ml-auto w-4 h-4 transform transition-transform duration-300 ${
@@ -167,7 +167,7 @@ const Sidebar = () => {
         >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
-              <FaTools className="h-5 w-5" />
+              <FaTools className="h-5 w-5 text-blue-700" />
             </ListItemPrefix>
             Komponen
           </ListItem>
@@ -181,7 +181,7 @@ const Sidebar = () => {
         >
           <ListItem className="hover:text-new-200">
             <ListItemPrefix>
-              <CgProfile className="h-5 w-5" />
+              <CgProfile className="h-5 w-5 text-blue-700" />
             </ListItemPrefix>
             Profil
           </ListItem>
@@ -192,7 +192,7 @@ const Sidebar = () => {
           onClick={handleLogoutShow}
         >
           <ListItemPrefix>
-            <FiLogOut className="h-5 w-5" />
+            <FiLogOut className="h-5 w-5 text-red-700" />
           </ListItemPrefix>
           Keluar
         </ListItem>
