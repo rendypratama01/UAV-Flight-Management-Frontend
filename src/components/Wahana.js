@@ -668,6 +668,7 @@ function Wahana() {
                     name="photos"
                     multiple
                     onChange={handleFileChange}
+                    accept="image/*"
                   />
                   {photoError && (
                     <div className="text-danger mt-2">{photoError}</div>

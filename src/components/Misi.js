@@ -547,8 +547,9 @@ const Misi = () => {
                     required
                   >
                     <option value="">Pilih telemetry...</option>
-                    <option value="net1">Net ID 1</option>
-                    <option value="net2">Net ID 2</option>
+                    <option value="Net ID 1">Net ID 1</option>
+                    <option value="Net ID 2">Net ID 2</option>
+                    <option value="Net ID 3">Net ID 3</option>
                   </Form.Control>
                 </Form.Group>
 
@@ -562,8 +563,8 @@ const Misi = () => {
                     required
                   >
                     <option value="">Pilih remote control...</option>
-                    <option value="2.4ghz">2.4 GHz</option>
-                    <option value="5.8ghz">5.8 GHz</option>
+                    <option value="2.4 Ghz">2.4 GHz</option>
+                    <option value="5.8 Ghz">5.8 GHz</option>
                   </Form.Control>
                 </Form.Group>
 
@@ -577,8 +578,8 @@ const Misi = () => {
                     required
                   >
                     <option value="">Pilih video sender...</option>
-                    <option value="2.4ghz">2.4 GHz</option>
-                    <option value="5.8ghz">5.8 GHz</option>
+                    <option value="2.4 Ghz">2.4 GHz</option>
+                    <option value="5.8 Ghz">5.8 GHz</option>
                   </Form.Control>
                 </Form.Group>
               </Tab>
