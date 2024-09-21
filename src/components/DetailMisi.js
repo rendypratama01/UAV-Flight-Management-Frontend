@@ -11,6 +11,17 @@ import "react-medium-image-zoom/dist/styles.css";
 import ReactDOM from "react-dom";
 import { FaTrashAlt, FaDownload, FaCheckCircle } from "react-icons/fa";
 import { penerbanganPath } from "../routes";
+import {
+  FaHourglassHalf,
+  FaUser,
+  FaPlane,
+  FaToolbox,
+  FaClipboard,
+  FaCalendarAlt,
+  FaSatellite,
+  FaGamepad,
+  FaVideo,
+} from "react-icons/fa";
 
 const DetailMisi = () => {
   const { uuid } = useParams(); // Get the uuid from URL parameters
@@ -153,21 +164,23 @@ const DetailMisi = () => {
 
   const handleConfirmDownload = async () => {
     try {
-      const photo = dokumenFotos.find((foto) => foto.uuid === downloadPhotoUuid);
+      const photo = dokumenFotos.find(
+        (foto) => foto.uuid === downloadPhotoUuid
+      );
       if (photo && photo.foto_urls) {
         // Mendapatkan data gambar dari URL
         const response = await fetch(photo.foto_urls);
-        
+
         if (response.ok) {
           const blob = await response.blob();
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = window.URL.createObjectURL(blob);
           link.download = `photo_${downloadPhotoUuid}.jpeg`; // Atur ekstensi file sesuai kebutuhan
           link.click();
           // Cleanup
           window.URL.revokeObjectURL(link.href);
         } else {
-          throw new Error('Gagal mengunduh gambar.');
+          throw new Error("Gagal mengunduh gambar.");
         }
       }
     } catch (error) {
@@ -186,92 +199,119 @@ const DetailMisi = () => {
       <div className="detail-misi-container-sub_title">
         <Tabs defaultActiveKey="detail" id="tab" className="mb-3">
           <Tab eventKey="detail-misi" title="Detail Misi">
-            <div className="mt-3">
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Status</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.status ? "Selesai" : "Proses"}
-                </span>
+            <div className="mt-3 bg-white p-6 rounded-lg shadow-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    {missionDetails.status ? (
+                      <FaCheckCircle className="mr-2 text-green-600" />
+                    ) : (
+                      <FaHourglassHalf className="mr-2 text-yellow-600 " />
+                    )}
+                    Status
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.status ? "Selesai" : "Proses"}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaUser className="mr-2" /> Pembuat Misi
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.creator}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaPlane className="mr-2" /> Wahana
+                  </span>
+                  <div className="text-gray-900 text-xl">
+                    {missionDetails.wahanas.map((wahana, index) => (
+                      <div key={index}>
+                        {wahana.nama_wahana} - {wahana.tipe}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaUser className="mr-2" /> Operator
+                  </span>
+                  <div className="text-gray-900 text-xl">
+                    {missionDetails.userMisi.map((operator, index) => (
+                      <div key={index}>
+                        {operator.name} - {operator.role}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaToolbox className="mr-2" /> Komponen
+                  </span>
+                  <div className="text-gray-900 text-xl">
+                    {missionDetails.komponens.map((komponen, index) => (
+                      <div key={index}>
+                        {komponen.nama_komponen} - {komponen.kategori}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaCalendarAlt className="mr-2" /> Tanggal Misi
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.createdAt}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaClipboard className="mr-2" /> Kategori
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.kategori}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaSatellite className="mr-2" /> Telemetry
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.telemetry}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaGamepad className="mr-2" /> Remote Control
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.remote}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-start p-4 border-l-4 border-blue-700">
+                  <span className="flex items-center font-bold text-blue-900 text-lg">
+                    <FaVideo className="mr-2" /> Video Sender
+                  </span>
+                  <span className="text-gray-900 text-xl">
+                    {missionDetails.video_sender}
+                  </span>
+                </div>
               </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Pembuat Misi</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.creator}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Wahana</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.wahanas.map((wahana, index) => (
-                    <div key={index}>
-                      {wahana.nama_wahana} - {wahana.tipe}
-                    </div>
-                  ))}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Operator</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.userMisi.map((operator, index) => (
-                    <div key={index}>
-                      {operator.name} - {operator.role}
-                    </div>
-                  ))}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Komponen</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.komponens.map((komponen, index) => (
-                    <div key={index}>
-                      {komponen.nama_komponen} - {komponen.kategori}
-                    </div>
-                  ))}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Tanggal Misi</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.createdAt}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Kategori</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.kategori}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Telemetry</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.telemetry}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Remote Control</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.remote}
-                </span>
-              </div>
-              <div className="flex mb-2">
-                <span className="font-bold w-36">Video Sender</span>
-                <span className="w-1 mx-1">:</span>
-                <span className="flex-1 text-left">
-                  {missionDetails.video_sender}
-                </span>
-              </div>
+
               <div className="mt-3 py-1 flex justify-between">
                 <button
-                  className="py-2 px-4 shadow-md font-bold bg-blue-500 w-full h-14 text-white rounded-lg"
+                  className="py-2 px-4 shadow-md font-bold bg-blue-500 w-full h-14 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
                   onClick={() => setShowConfirm(true)}
                 >
                   Konfirmasi Misi
@@ -288,15 +328,32 @@ const DetailMisi = () => {
                   href={`${penerbanganPath}/${flight.uuid}`}
                   className="no-underline hover:no-underline text-inherit"
                 >
-                  <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
+                  <div
+                    className={`bg-white text-gray-800 p-6 rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out cursor-pointer ${
+                      flight.status_penerbangan
+                        ? "border-l-4 border-green-500"
+                        : "border-l-4 border-orange-500"
+                    }`}
+                  >
                     <h4 className="text-xl font-bold mb-2">
-                      Durasi: {flight.durasi} menit
+                      <span className="text-blue-600">Durasi:</span>{" "}
+                      {flight.durasi} menit
                     </h4>
                     <p className="text-sm mb-1">
-                      Status Penerbangan:{" "}
+                      <span className="font-semibold flex items-center">
+                        {flight.status_penerbangan ? (
+                          <FaCheckCircle className="mr-2 text-green-600" />
+                        ) : (
+                          <FaHourglassHalf className="mr-2 text-orange-500" />
+                        )}
+                        Status Penerbangan:
+                      </span>{" "}
                       {flight.status_penerbangan ? "Selesai" : "Proses"}
                     </p>
-                    <p className="text-sm">Mulai: {flight.mulai}</p>
+                    <p className="text-sm">
+                      <span className="text-gray-500">Mulai:</span>{" "}
+                      {flight.mulai}
+                    </p>
                   </div>
                 </a>
               ))}
@@ -304,7 +361,7 @@ const DetailMisi = () => {
           </Tab>
 
           <Tab eventKey="dokumentasi" title="Dokumentasi">
-            <div className="mt-3 px-2 flex justify-between">
+            <div className="mt-3 flex justify-between">
               <button
                 className="py-2 px-4 bg-blue-500 text-white rounded-md"
                 onClick={() => setShowModal(true)}
@@ -412,9 +469,7 @@ const DetailMisi = () => {
                 <h2 className="text-lg font-semibold mb-4">
                   Konfirmasi Download
                 </h2>
-                <p className="mb-4">
-                  Apakah Anda ingin download foto ini?
-                </p>
+                <p className="mb-4">Apakah Anda ingin download foto ini?</p>
                 <div className="flex justify-end gap-4">
                   <button
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
